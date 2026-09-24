@@ -1,6 +1,33 @@
+const { use } = require('../routes/userRoutes');
 const userService = require('../services/userService');
 
 const { verificarToken } = require('../utils/jwt');
+
+
+async function postUser(req, res) {
+    
+    try{
+
+        const {nome_user, email_user, senha_user} = req.body;
+
+        if(!nome_user || !email_user || !senha_user){
+            return res.status(400).json({
+                mensagem:'Bad Request ao postar usuário'
+            })
+        }
+
+        const resposta = await userService.
+
+
+    }catch(error){
+        console.error('Erro ao postar usuário', error);
+
+        return res.status(500).json({
+            mensagem: 'Dados inválidos'
+        })
+    }
+
+}
 
 // async function login(req, res) {
 //   try {

@@ -4,6 +4,14 @@ const {
   comparePassword
 } = require('../utils/password');
 
+
+async function postUser (nome_user, email_user, senha_user){
+
+  const verificaEmail = await userRepository.
+
+
+}
+
 // async function login(email, senha) {
 
 //   const usuarioEncontrado =
