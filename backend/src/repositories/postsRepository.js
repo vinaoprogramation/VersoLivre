@@ -46,7 +46,7 @@ async function buscaCriadorPostagem(id_postagem){
     return criador;
 
   } catch (error) {
-    console.error("Erro ao buscar o criador da postagem");
+    console.error("Erro ao buscar o criador da postagem", error);
   }
 
 }
@@ -64,7 +64,7 @@ async function buscaDadosPostagem(id_postagem){
     return dados;
     
   } catch (error) {
-    console.error("Erro ao buscar dados da postagem")
+    console.error("Erro ao buscar dados da postagem", error);
   }
 
 }
@@ -73,7 +73,7 @@ async function verificaExistenciaPostagem(id_postagem) {
 
   try {
 
-    const verificaExistenciaQuery = 'SELECT EXISTS (SELECT 1 FROM postagens WHERE id_postagem = ?) AS id_existe';
+    const verificaExistenciaQuery = 'SELECT EXISTS (SELECT 1 FROM postagens WHERE id_postagem = ? AND is_active = true) AS id_existe';
 
     const [verificaExistencia] = await pool.execute(verificaExistenciaQuery, [id_postagem]);
 
@@ -106,7 +106,39 @@ async function verificaStatusPostagem(id_postagem){
   return true;
     
   } catch (error) {
-    console.error("Erro ao verificar status da postagem")
+    console.error("Erro ao verificar status da postagem", error);
+  }
+
+}
+
+async function deletaPostagem(id_postagem, id_responsavel_delete){
+
+  try {
+
+    const deletaPostagemQuery = "UPDATE postagens SET is_active = false, id_responsavel_delete = ? WHERE id_postagem = ?";
+
+    const [deletaPostagem] = await pool.execute(deletaPostagemQuery, [id_responsavel_delete, id_postagem]);
+
+    return deletaPostagem.affectedRows;
+    
+  } catch (error) {
+    console.error("Erro ao deletar logicamente a postagem", error);
+  }
+
+}
+
+async function listaPostagens(offset){
+
+  try {
+    
+    const listaPostagensQuery = "SELECT * FROM postagens ORDER BY id_postagem ASC LIMIT 10 OFFSET ? WHERE is_active = true";
+
+    const [listaPostagens] = await pool.execute(listaPostagensQuery, [(offset - 1) * 10])
+
+    return listaPostagens[0]
+
+  } catch (error) {
+    console.error("Erro ao listar postagens", error);
   }
 
 }
@@ -119,4 +151,6 @@ module.exports = {
   verificaStatusPostagem,
   buscaCriadorPostagem,
   buscaDadosPostagem,
+  deletaPostagem,
+  listaPostagens,
 }
