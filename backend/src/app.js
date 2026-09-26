@@ -9,6 +9,7 @@ const corsOptions = {
 
 const userRoutes = require('../src/routes/userRoutes');
 const healthRoutes = require('../src/routes/healthRoutes');
+const postsRoutes = require('../src/routes/postsRoutes');
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 
 app.use('/health', healthRoutes);
 app.use('/user', userRoutes);
+app.use('/posts', postsRoutes);
 
 
 module.exports = app;

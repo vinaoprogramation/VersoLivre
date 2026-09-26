@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 
+const JWT_SECRET = process.env.JWT_SECRET;
+
 function gerarToken(payload) {
 
   try {
@@ -33,7 +35,32 @@ function verificarToken(token){
 
 }
 
+function extractBearerToken(header){
+
+  const tokenInteiro = header.authorization;
+
+  if(!tokenInteiro){
+    return null
+  }
+
+  const token = tokenInteiro.split(" ")[1];
+
+  const type = tokenInteiro.split(" ")[0];
+
+  if(type != "Bearer"){
+    return null
+  }
+
+  if(!token){
+    return null
+  }
+
+  return token;
+
+}
+
 module.exports = {
   gerarToken,
   verificarToken,
+  extractBearerToken,
 }
