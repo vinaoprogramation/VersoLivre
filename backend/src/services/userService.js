@@ -40,11 +40,6 @@ async function cadastraUser(nome_user, email_user, senha_user, role_user, id_cad
   if (existeEmail) {
     return { erro: "Email já cadastrado" };
   }
-  const verificaNivelResponsavel = await userRepository.buscaParaAutenticacao(id_cadastrador);
-
-  if (verificaNivelResponsavel.role != "admin") {
-    return { erro: "Ação negada para este usuário" };
-  }
 
   const hash = await hashPassword(senha_user);
 
@@ -52,7 +47,7 @@ async function cadastraUser(nome_user, email_user, senha_user, role_user, id_cad
     return { erro: "Erro ao encriptar senha" }
   }
 
-  const criaUsuario = await userRepository.postaUsuario(nome_user, email_user, hash, role_user);
+  const criaUsuario = await userRepository.cadastraUsuario(nome_user, email_user, hash, role_user);
 
   if (criaUsuario === 0) {
     return { erro: "Erro interno ao cadastrar usuário" };

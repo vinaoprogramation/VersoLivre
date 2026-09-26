@@ -31,15 +31,27 @@ async function decideStatusPostagem(status_postagem, id_responsavel_postagem , i
   const verificaPostagem = await postsRepository.verificaExistenciaPostagem(id_postagem);
 
   if(!verificaPostagem){
-    console.log("Postagem nao existe")
     return {erro: "Postagem não existe"};
-  }
+  }  
 
   const verificaResponsavel = await userRepository.existeUsuario(null, id_responsavel_postagem);
 
   if(!verificaResponsavel){
-    console.log("Usuario nao existe")
     return {erro: "Usuário não existe"};
+  }
+
+  const verificaAutor = await postsRepository.buscaCriadorPostagem(id_postagem);
+
+  if(verificaAutor == id_responsavel_postagem){
+    console.log("Auto-aprovação")
+    return {erro: "Usuário não pode auto-aprovar uma postagem"}
+  }
+
+  const verificaStatus = await postsRepository.verificaStatusPostagem(id_postagem);
+
+  if(verificaStatus){
+    console.log("Status alterado")
+    return {erro: "O status da postagem já foi alterado anteriormente"}
   }
 
   const decideStatus = await postsRepository.decideStatusPostagem(status_postagem, id_responsavel_postagem, id_postagem, mensagem);

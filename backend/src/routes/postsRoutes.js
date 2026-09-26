@@ -17,6 +17,7 @@ router.use(adminAcess);
 
 router.patch('/post', decideStatusPostagem);
 
+
 module.exports = router;
 
 

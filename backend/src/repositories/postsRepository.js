@@ -33,6 +33,42 @@ async function decideStatusPostagem(status_postagem, id_responsavel_postagem, id
 
 }
 
+async function buscaCriadorPostagem(id_postagem){
+
+  try {
+    
+    const buscaCriadorQuery = "SELECT id_autor_user FROM postagens WHERE id_postagem = ?";
+
+    const [buscaCriador] = await pool.execute(buscaCriadorQuery, [id_postagem]);
+
+    const criador = buscaCriador[0].id_autor_user;
+
+    return criador;
+
+  } catch (error) {
+    console.error("Erro ao buscar o criador da postagem");
+  }
+
+}
+
+async function buscaDadosPostagem(id_postagem){
+
+  try {
+
+    const buscaDadosQuery = "SELECT * FROM postagens WHERE id_postagem = ?";
+
+    const [buscaDados] = await pool.execute(buscaDadosQuery, [id_postagem])
+
+    const dados = buscaDados[0];
+
+    return dados;
+    
+  } catch (error) {
+    console.error("Erro ao buscar dados da postagem")
+  }
+
+}
+
 async function verificaExistenciaPostagem(id_postagem) {
 
   try {
@@ -51,7 +87,27 @@ async function verificaExistenciaPostagem(id_postagem) {
     console.error("Erro no banco de dados ao verificar existência da postagem", error);
   }
 
+}
 
+async function verificaStatusPostagem(id_postagem){
+
+  try {
+
+  const verificaStatusQuery = "SELECT status_postagem FROM postagens WHERE id_postagem = ?";
+
+  const [verificaStatus] = await pool.execute(verificaStatusQuery, [id_postagem])
+
+  const status = verificaStatus[0].status_postagem;
+
+  if(status != "aprovada" && status != "recusada"){
+    return false;
+  }
+
+  return true;
+    
+  } catch (error) {
+    console.error("Erro ao verificar status da postagem")
+  }
 
 }
 
@@ -60,4 +116,7 @@ module.exports = {
   enviarPostagem,
   decideStatusPostagem,
   verificaExistenciaPostagem,
+  verificaStatusPostagem,
+  buscaCriadorPostagem,
+  buscaDadosPostagem,
 }
