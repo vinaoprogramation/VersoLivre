@@ -6,22 +6,22 @@ async function existeUsuario(email_user, id_user) {
     try {
 
         async function separaTipo(email_user, id_user) {
-            if (id_user!=null) {
+            if (id_user != null) {
                 const buscaUsuarioQuery = 'SELECT EXISTS (SELECT 1 FROM users WHERE id_user = ?) AS id_existe';
 
                 const [buscaUsuario] = await pool.execute(buscaUsuarioQuery, [id_user]);
-                
+
                 return buscaUsuario[0].id_existe === 1;
             }
 
-            else if (!id_user && email_user!=null) {
+            else if (!id_user && email_user != null) {
                 const buscaUsuarioQuery = 'SELECT EXISTS (SELECT 1 FROM users WHERE email_user = ?) AS email_existe';
 
                 const [buscaUsuario] = await pool.execute(buscaUsuarioQuery, [email_user]);
-                
+
                 return buscaUsuario[0].email_existe === 1;
             }
-            else{
+            else {
                 return null;
             }
 
@@ -38,15 +38,15 @@ async function existeUsuario(email_user, id_user) {
 
 }
 
-async function numeroDeUsuarios(){
+async function numeroDeUsuarios() {
 
     try {
-        
+
         const verificaUsuariosQuery = "SELECT CASE WHEN EXISTS (SELECT 1 FROM users) THEN 1 ELSE 0 END AS resultado";
 
         const [verificaUsuarios] = await pool.execute(verificaUsuariosQuery);
 
-        if(verificaUsuarios[0].resultado === 1){
+        if (verificaUsuarios[0].resultado === 1) {
             return true;
         }
 
@@ -114,7 +114,7 @@ async function postaUsuario(nome_user, email_user, senha_user) {
 
         const verificaPapel = await numeroDeUsuarios();
 
-        if(!verificaPapel){
+        if (!verificaPapel) {
             role_user = "admin";
         }
 
@@ -132,7 +132,7 @@ async function postaUsuario(nome_user, email_user, senha_user) {
 
 }
 
-async function cadastraUsuario(nome_user, email_user, senha_user, role_user){
+async function cadastraUsuario(nome_user, email_user, senha_user, role_user) {
 
     try {
 
@@ -142,7 +142,7 @@ async function cadastraUsuario(nome_user, email_user, senha_user, role_user){
 
         return cadastraUsuario.affectedRows;
 
-        
+
     } catch (error) {
         console.error("Erro ao cadastrar usuário");
     }

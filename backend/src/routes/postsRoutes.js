@@ -6,18 +6,20 @@ const {
   enviaPostagem,
   decideStatusPostagem,
   deletaPostagem,
+  listaPostagens,
 } = require('../controllers/postsController');
 
 const router = express.Router();
 
 router.use(acesso);
 
-router.post('/post', enviaPostagem);
-router.delete('/delete', deletaPostagem);
+router.post('/', enviaPostagem);
+router.delete('/', deletaPostagem);
+router.get('/', listaPostagens)
 
 router.use(adminAcess);
 
-router.patch('/post', decideStatusPostagem);
+router.patch('/', decideStatusPostagem);
 
 
 module.exports = router;

@@ -131,11 +131,11 @@ async function listaPostagens(offset){
 
   try {
     
-    const listaPostagensQuery = "SELECT * FROM postagens ORDER BY id_postagem ASC LIMIT 10 OFFSET ? WHERE is_active = true";
+    const listaPostagensQuery = "SELECT * FROM postagens WHERE is_active = true ORDER BY id_postagem ASC LIMIT 10 OFFSET ? ";
 
     const [listaPostagens] = await pool.execute(listaPostagensQuery, [(offset - 1) * 10])
 
-    return listaPostagens[0]
+    return listaPostagens;
 
   } catch (error) {
     console.error("Erro ao listar postagens", error);
@@ -143,6 +143,24 @@ async function listaPostagens(offset){
 
 }
 
+async function contaOffSets() {
+
+    try {
+
+        const contaQuery = "SELECT COUNT(*) as total FROM postagens;"
+
+        const [conta] = await pool.execute(contaQuery);
+
+        const numero = Math.ceil(conta[0].total / 10);
+
+        return numero;
+
+    } catch (error) {
+        console.error("Erro ao contar o número de offsets no banco", error);
+    }
+
+
+}
 
 module.exports = {
   enviarPostagem,
@@ -153,4 +171,5 @@ module.exports = {
   buscaDadosPostagem,
   deletaPostagem,
   listaPostagens,
+  contaOffSets,
 }

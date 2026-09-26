@@ -41,7 +41,7 @@ async function enviaPostagem(req, res) {
     })
 
   } catch (error) {
-    console.log("Erro interno ao enviar postagem");
+    console.error("Erro interno ao enviar postagem", error);
     return res.status(500).json({
       mensagem: "Erro interno ao enviar postagem"
     })
@@ -57,14 +57,12 @@ async function decideStatusPostagem(req, res) {
     const { status_postagem, id_responsavel_postagem, id_postagem, mensagem } = req.body;
 
     if (!status_postagem || !id_responsavel_postagem || !id_postagem) {
-      console.log("Parou 1")
       return res.status(404).json({
         mensagem: "Bad request ao alterar o status da postagem"
       })
     }
 
     if (status_postagem != "aprovada" && status_postagem != "recusada") {
-      console.log("Parou 2")
       return res.status(404).json({
         mensagem: "Status inválido"
       })
@@ -147,8 +145,43 @@ async function deletaPostagem(req, res) {
 
 }
 
+async function listaPostagens(req, res) {
+
+  try {
+    const { offset } = req.body;
+
+    if (!offset || offset <= 0 || !(Number.isInteger(offset))) {
+      return res.status(404).json({
+        mensagem: "Bad request ao listar as postagens"
+      })
+    }
+
+    const resposta = await postsService.listaPostagens(offset);
+
+    if (resposta && resposta.erro) {
+      return res.status(400).json({
+        mensagem: "Houve algum problema ao listar as postagens"
+      })
+    }
+
+    return res.status(200).json({
+      postagens: resposta
+    })
+
+  } catch (error) {
+    console.error("Erro interno ao listar as postagens")
+
+    return res.status(500).json({
+      mensagem: "Erro interno ao listar as postagens"
+    })
+  }
+
+
+}
+
 module.exports = {
   enviaPostagem,
   decideStatusPostagem,
   deletaPostagem,
+  listaPostagens,
 }
