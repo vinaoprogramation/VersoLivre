@@ -98,15 +98,11 @@ async function listaPostagens(offset){
 
   const contaOffSet = await postsRepository.contaOffSets();
 
-  if(offset > contaOffSet){
+  if(offset != 1  && offset > contaOffSet){
     return {erro: "O offset chamado é maior do que o número de offsets no banco"}
   }
 
   const postagens = await postsRepository.listaPostagens(offset);
-
-  if(postagens.length == 0){
-    return {erro: "Não há postagens para este índice"}
-  }
 
   return postagens;
 

@@ -148,19 +148,41 @@ async function deletaPostagem(req, res) {
 async function listaPostagens(req, res) {
 
   try {
-    const { offset } = req.body;
 
-    if (!offset || offset <= 0 || !(Number.isInteger(offset))) {
+    const offset = req.params.offset;
+
+    let numeroOffset;
+
+    if(offset){
+      numeroOffset = parseInt(offset);
+    }
+
+
+
+    if (numeroOffset <= 0 || !(Number.isInteger(numeroOffset))) {
       return res.status(404).json({
         mensagem: "Bad request ao listar as postagens"
       })
     }
 
-    const resposta = await postsService.listaPostagens(offset);
+    const resposta = await postsService.listaPostagens(numeroOffset);
+
+    if(resposta && resposta.erro == 'O offset chamado é maior do que o número de offsets no banco'){
+      return res.status(200).json({
+        mensagem: "O índice de busca é maior do que a quantidade de postagens existentes"
+      })
+    }
 
     if (resposta && resposta.erro) {
       return res.status(400).json({
-        mensagem: "Houve algum problema ao listar as postagens"
+        mensagem: "Houve algum problema ao listar as postagens",
+      })
+    }
+
+    if(resposta.length === 0){
+      return res.status(200).json({
+        mensagem: "Não existem postagens no momento",
+        postagens: resposta
       })
     }
 
@@ -169,10 +191,12 @@ async function listaPostagens(req, res) {
     })
 
   } catch (error) {
-    console.error("Erro interno ao listar as postagens")
+    console.error("Erro interno ao listar as postagens");
+
+    console.log(error)
 
     return res.status(500).json({
-      mensagem: "Erro interno ao listar as postagens"
+      mensagem: "Erro interno ao listar as postagens",
     })
   }
 

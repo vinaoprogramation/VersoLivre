@@ -15,7 +15,7 @@ router.use(acesso);
 
 router.post('/', enviaPostagem);
 router.delete('/', deletaPostagem);
-router.get('/', listaPostagens)
+router.get('/:offset', listaPostagens)
 
 router.use(adminAcess);
 
