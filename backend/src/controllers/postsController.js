@@ -7,12 +7,30 @@ const {
 } = require('../utils/jwt');
 
 
+async function enviaImagem (req, res){
+  try {
+
+    if (!req.file) {
+      return res.status(400).json({
+        mensagem: "Nenhum arquivo encontrado"
+      })
+    }
+    
+  } catch (error) {
+    console.error("Erro interno ao enviar imagem ao banco de dados");
+
+    return res.status(500).json({
+      mensagem: "Erro interno ao enviar imagem ao banco de dados"
+    })
+  }
+}
+
 async function enviaPostagem(req, res) {
 
   try {
-    const { titulo_postagem, genero_postagem, classificacao_indicativa_postagem, id_autor_user } = req.body;
+    const { titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user } = req.body;
 
-    if (!titulo_postagem || !genero_postagem || !classificacao_indicativa_postagem || !id_autor_user) {
+    if (!titulo_postagem || !genero_postagem || !classificacao_indicativa_postagem || !conteudo_postagem || !id_autor_user) {
       return res.status(404).json({
         mensagem: "Bad request ao enviar postagem"
       });
@@ -208,4 +226,5 @@ module.exports = {
   decideStatusPostagem,
   deletaPostagem,
   listaPostagens,
+  enviaImagem,
 }

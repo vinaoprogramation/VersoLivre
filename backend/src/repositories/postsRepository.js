@@ -17,6 +17,22 @@ async function enviarPostagem(titulo_postagem, genero_postagem, classificacao_in
 }
 
 
+async function enviarImagem(dadosBinarios){
+
+  try {
+    
+    const enviaImagemQuery = "INSERT INTO postagens (imagem_postagem) VALUES (?) WHERE id_postagem = ?";
+
+    const enviaImagem = await pool.execute(enviaImagemQuery, [dadosBinarios]);
+
+    return enviaImagem.affectedRows;
+
+  } catch (error) {
+    console.error("Erro no banco de dados ao enviar imagem")
+  }
+
+}
+
 async function decideStatusPostagem(status_postagem, id_responsavel_postagem, id_postagem, mensagem) {
 
   try {
@@ -164,6 +180,7 @@ async function contaOffSets() {
 
 module.exports = {
   enviarPostagem,
+  enviarImagem,
   decideStatusPostagem,
   verificaExistenciaPostagem,
   verificaStatusPostagem,
