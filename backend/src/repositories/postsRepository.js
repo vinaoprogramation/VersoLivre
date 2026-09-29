@@ -24,7 +24,7 @@ async function enviarImagem(id_postagem, dadosBinarios){
     
     const enviaImagemQuery = "UPDATE postagens SET imagem_postagem = ? WHERE id_postagem = ?";
 
-    const enviaImagem = await pool.execute(enviaImagemQuery, [dadosBinarios, id_postagem]);
+    const [enviaImagem] = await pool.execute(enviaImagemQuery, [dadosBinarios, id_postagem]);
 
     return enviaImagem.affectedRows;
 
@@ -115,7 +115,7 @@ async function verificaStatusPostagem(id_postagem){
 
   try {
 
-  const verificaStatusQuery = "SELECT status_postagem FROM postagens WHERE id_postagem = ?";
+  const verificaStatusQuery = "SELECT status_postagem FROM postagens WHERE id_postagem = ? AND is_active = true";
 
   const [verificaStatus] = await pool.execute(verificaStatusQuery, [id_postagem])
 
@@ -125,7 +125,10 @@ async function verificaStatusPostagem(id_postagem){
     return false;
   }
 
-  return true;
+  return {
+    alterada: true,
+    status: status
+  };
     
   } catch (error) {
     console.error("Erro ao verificar status da postagem", error);
@@ -168,6 +171,23 @@ async function listaPostagens(offset){
 
 }
 
+async function listaPostagem(id_postagem){
+
+  try {
+
+    const listaPostagemQuery = 'SELECT * FROM postagens WHERE id_postagem = ? AND is_active = true AND status_postagem = "aprovada" ';
+
+    const [listaPostagem] = await pool.execute(listaPostagemQuery, [id_postagem]);
+
+    return listaPostagem[0];
+    
+  } catch (error) {
+    console.error("Erro ao listar postagem individual", error);
+    return {erro: "Erro ao listar postagem individual"}
+  }
+
+}
+
 async function contaOffSets() {
 
     try {
@@ -198,5 +218,6 @@ module.exports = {
   buscaDadosPostagem,
   deletaPostagem,
   listaPostagens,
+  listaPostagem,
   contaOffSets,
 }

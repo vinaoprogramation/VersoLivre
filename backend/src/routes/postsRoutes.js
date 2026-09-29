@@ -10,6 +10,7 @@ const {
   decideStatusPostagem,
   deletaPostagem,
   listaPostagens,
+  listaPostagem,
 } = require('../controllers/postsController');
 
 const router = express.Router();
@@ -21,6 +22,7 @@ router.post('/', enviaPostagem);
 router.put('/file/:id', uploadConfig.single('imagem_postagem'), enviaImagem)
 router.delete('/', deletaPostagem);
 router.get('/:offset', listaPostagens)
+router.get('/single/:id', listaPostagem)
 
 router.use(adminAcess);
 

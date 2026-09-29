@@ -8,12 +8,12 @@ const {
 } = require('../utils/jwt');
 
 
-async function enviaImagem (req, res){
+async function enviaImagem(req, res) {
   try {
 
     const id_postagem = Number(req.params.id);
 
-    if(!Number.isInteger(id_postagem) || id_postagem <= 0){
+    if (!Number.isInteger(id_postagem) || id_postagem <= 0) {
       return res.status(400).json({
         mensagem: "ID inválido"
       })
@@ -26,7 +26,7 @@ async function enviaImagem (req, res){
       })
     }
 
-    const {buffer, mimetype} = req.file;
+    const { buffer, mimetype } = req.file;
 
     const resposta = await postsService.enviaImagem(id_postagem, buffer, mimetype);
 
@@ -39,7 +39,7 @@ async function enviaImagem (req, res){
     return res.status(200).json({
       mensagem: "Imagem enviada com sucesso"
     })
-    
+
   } catch (error) {
     console.error("Erro interno ao enviar imagem ao banco de dados");
 
@@ -70,7 +70,7 @@ async function enviaPostagem(req, res) {
 
     if (resposta && resposta.erro) {
       return res.status(400).json({
-        mensagem: "Houve algum problema ao enviar a postagem"
+        mensagem: "Houve algum problema ao enviar a postagem | " + resposta.erro
       })
     }
 
@@ -116,7 +116,7 @@ async function decideStatusPostagem(req, res) {
 
     if (resposta && resposta.erro) {
       return res.status(400).json({
-        mensagem: "Houve algum problema ao alterar o status da postagem"
+        mensagem: "Houve algum problema ao alterar o status da postagem | " + resposta.erro
       })
     }
 
@@ -166,7 +166,7 @@ async function deletaPostagem(req, res) {
 
       if (resposta && resposta.erro) {
         return res.status(400).json({
-          mensagem: "Houve algum problema ao deletar a postagem"
+          mensagem: "Houve algum problema ao deletar a postagem | " + resposta.erro,
         })
       }
     }
@@ -195,7 +195,7 @@ async function listaPostagens(req, res) {
 
     let numeroOffset;
 
-    if(offset){
+    if (offset) {
       numeroOffset = parseInt(offset);
     }
 
@@ -209,7 +209,7 @@ async function listaPostagens(req, res) {
 
     const resposta = await postsService.listaPostagens(numeroOffset);
 
-    if(resposta && resposta.erro == 'O offset chamado é maior do que o número de offsets no banco'){
+    if (resposta && resposta.erro == 'O offset chamado é maior do que o número de offsets no banco') {
       return res.status(200).json({
         mensagem: "O índice de busca é maior do que a quantidade de postagens existentes"
       })
@@ -217,11 +217,11 @@ async function listaPostagens(req, res) {
 
     if (resposta && resposta.erro) {
       return res.status(400).json({
-        mensagem: "Houve algum problema ao listar as postagens",
+        mensagem: "Houve algum problema ao listar as postagens | " + resposta.erro,
       })
     }
 
-    if(resposta.length === 0){
+    if (resposta.length === 0) {
       return res.status(200).json({
         mensagem: "Não existem postagens no momento",
         postagens: resposta
@@ -242,6 +242,48 @@ async function listaPostagens(req, res) {
     })
   }
 
+}
+
+async function listaPostagem(req, res) {
+
+  try {
+
+    const id_postagem = req.params.id;
+
+    if (!id_postagem) {
+      return res.status(404).json({
+        mensagem: "Bad request ao listar postagem individualmente"
+      })
+    }
+
+    const id = parseInt(id_postagem);
+
+    if (id <= 0 || !(Number.isInteger(id))) {
+      return res.status(404).json({
+        mensagem: "Bad request ao listar postagem"
+      })
+    }
+
+    const resposta = await postsService.listaPostagem(id);
+
+    if (resposta && resposta.erro) {
+      return res.status(400).json({
+        mensagem: "Houve algum problema ao listar a postagem | " + resposta.erro
+      })
+    }
+
+    return res.status(200).json({
+      postagem: resposta
+    })
+
+    
+  } catch (error) {
+    console.error("Erro interno ao listar postagem individual");
+
+    return res.status(500).json({
+      mensagem: "Erro interno ao listar postagem individual"
+    })
+  }
 
 }
 
@@ -250,5 +292,6 @@ module.exports = {
   decideStatusPostagem,
   deletaPostagem,
   listaPostagens,
+  listaPostagem,
   enviaImagem,
 }

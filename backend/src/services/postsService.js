@@ -155,10 +155,35 @@ async function listaPostagens(offset){
 }
 
 
+async function listaPostagem(id_postagem){
+
+  const verificaPostagem = await postsRepository.verificaExistenciaPostagem(id_postagem);
+
+  if(!verificaPostagem){
+    return {erro: "Postagem não existe"}
+  }
+
+  const verificaStatusPostagem = await postsRepository.verificaStatusPostagem(id_postagem);
+
+  if(!verificaStatusPostagem.status || !verificaPostagem.status == 'aprovada'){
+    return {erro: "A postagem não foi aprovada"}
+  }
+
+  const buscaPostagem = await postsRepository.listaPostagem(id_postagem);
+
+  if(buscaPostagem.length === 0){
+    return {erro: "Erro ao buscar postagem no banco de dados"}
+  }
+
+  return buscaPostagem;
+
+}
+
 module.exports = {
   enviaPostagem,
   enviaImagem,
   decideStatusPostagem,
   deletaPostagem,
   listaPostagens,
+  listaPostagem,
 }
