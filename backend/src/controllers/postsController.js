@@ -1,3 +1,4 @@
+const upload = require("../config/multer");
 const postsService = require("../services/postsService");
 
 const {
@@ -10,17 +11,40 @@ const {
 async function enviaImagem (req, res){
   try {
 
+    const id_postagem = Number(req.params.id);
+
+    if(!Number.isInteger(id_postagem) || id_postagem <= 0){
+      return res.status(400).json({
+        mensagem: "ID inválido"
+      })
+    }
+
+
     if (!req.file) {
       return res.status(400).json({
         mensagem: "Nenhum arquivo encontrado"
       })
     }
+
+    const {buffer, mimetype} = req.file;
+
+    const resposta = await postsService.enviaImagem(id_postagem, buffer, mimetype);
+
+    if (resposta && resposta.erro) {
+      return res.status(400).json({
+        mensagem: "Houve algum problema ao enviar a imagem | " + resposta.erro
+      })
+    }
+
+    return res.status(200).json({
+      mensagem: "Imagem enviada com sucesso"
+    })
     
   } catch (error) {
     console.error("Erro interno ao enviar imagem ao banco de dados");
 
     return res.status(500).json({
-      mensagem: "Erro interno ao enviar imagem ao banco de dados"
+      mensagem: "Erro interno ao enviar imagem ao banco de dados" + error.message
     })
   }
 }
@@ -42,7 +66,7 @@ async function enviaPostagem(req, res) {
       });
     }
 
-    const resposta = await postsService.enviaPostagem(titulo_postagem, genero_postagem, classificacao_indicativa_postagem, id_autor_user);
+    const resposta = await postsService.enviaPostagem(titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user);
 
     if (resposta && resposta.erro) {
       return res.status(400).json({

@@ -17,7 +17,8 @@ const router = express.Router();
 router.use(acesso);
 
 router.post('/', enviaPostagem);
-router.post('/file/:id', uploadConfig.single('imagem_postagem'), enviaImagem)
+
+router.put('/file/:id', uploadConfig.single('imagem_postagem'), enviaImagem)
 router.delete('/', deletaPostagem);
 router.get('/:offset', listaPostagens)
 
