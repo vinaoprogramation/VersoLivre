@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap');
+
+*{
+  font-family: "EB Garamond", serif;
+}
+
+
+.fundo{
+  background-color: #cebb97;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.entrada{
+  background-color: #ffffff;
+  width: 40%;
+  height: 80%;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.247);
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4%;
+}
+
+
+.input{
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.473);
+  padding: 1em;
+  width: 80%;
+  border-radius: 5px;
+  transition: box-shadow 0.05s;
+}
+
+.input:hover{
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.623);
+}
+
+.input:focus{
+  outline: none;
+}
+
+.botao{
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.473);
+  padding: 3% 10%;
+  border-radius: 10px;
+  background-color: #885c32;
+  transition: opacity 0.10s, box-shadow 0.2s;
+}
+
+.botao:hover{
+  cursor: pointer;
+   box-shadow: 0 0 5px rgba(0, 0, 0, 0.623);
+}
+
+.botao:active{
+  opacity: 0.8;
+}
+
+.textoBotao{
+  color: #ffffff;
+  font-weight: 600;
+}

@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap');
+
+*{
+  font-family: "EB Garamond", serif;
+}
+
+.fundo{
+  background-color: #cebb97;
+  width: fit-content;
+  height: fit-content;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.entrada{
+  background-color: #ffffff;
+  width: 70%;
+  height: 100%;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.247);
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10vh;
+}
+
+.postagemContainer{
+  width: 80%;
+  height: 40vh;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.432);
+  padding: 2%;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: padding 0.1s;
+}
+
+.postagemContainer:hover{
+  cursor: pointer;  
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.61);
+  padding: 2% 2.5%;
+}
+
+.tituloPostagem{
+
+  font-weight: 600;
+  font-size: 2em;
+
+
+}
+
+.generoPostagem{
+  margin: 10px 0;
+}
+
+.classificacaoPostagem{
+  margin: 0 0 10px 0;
+  padding: 3px 6px;
+  border: 1px solid black;
+  align-self: flex-start;
+  border-radius: 100%;
+  box-shadow: 0 0 2px  rgba(0, 0, 0, 0.432);
+
+}
+
+.conteudoPostagem{
+  padding: 5px 10px;
+}
+
+
+.activityContainer{
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+
+.containerNulo{
+  width: 100vw;
+  height: 100vh;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.textoNulo{
+  font-weight: 600; 
+}
+
+.botaoAdicionar{
+  width: 5%;
+  transition: opacity 0.05s;
+}
+
+.botaoAdicionar:hover{
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.imagemBotaoAdicionar{
+  width: 100%;
+}
