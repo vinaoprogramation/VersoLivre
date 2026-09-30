@@ -6,6 +6,8 @@ const uploadConfig = require('../config/multer');
 
 const {
   enviaPostagem,
+  enviaRascunho,
+  atualizaRascunho,
   enviaImagem,
   decideStatusPostagem,
   deletaPostagem,
@@ -18,6 +20,8 @@ const router = express.Router();
 router.use(acesso);
 
 router.post('/', enviaPostagem);
+router.post('/sketch', enviaRascunho);
+router.put('/update/:id', atualizaRascunho)
 
 router.put('/file/:id', uploadConfig.single('imagem_postagem'), enviaImagem)
 router.delete('/', deletaPostagem);

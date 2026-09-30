@@ -104,6 +104,23 @@ async function buscaParaAutenticacao(email_user) {
 
 }
 
+async function buscaNomeUsuario(id_user){
+
+    try {
+        
+        const buscaNomeUsuarioQuery = "SELECT nome_user FROM users WHERE id_user = ?";
+
+        const [buscaNomeUsuario] = await pool.execute(buscaNomeUsuarioQuery, [id_user])
+
+        return {
+            nome_user: buscaNomeUsuario[0].nome_user
+        }
+        
+    } catch (error) {
+        console.error("Erro no banco de dados ao buscar nome do usuário", error)
+    }
+}
+
 
 
 async function postaUsuario(nome_user, email_user, senha_user) {
@@ -155,5 +172,6 @@ module.exports = {
     cadastraUsuario,
     buscaSenha,
     buscaParaAutenticacao,
+    buscaNomeUsuario,
     numeroDeUsuarios,
 };

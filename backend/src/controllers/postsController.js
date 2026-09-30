@@ -49,12 +49,94 @@ async function enviaImagem(req, res) {
   }
 }
 
-async function enviaPostagem(req, res) {
+
+async function enviaRascunho(req, res) {
 
   try {
     const { titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user } = req.body;
 
-    if (!titulo_postagem || !genero_postagem || !classificacao_indicativa_postagem || !conteudo_postagem || !id_autor_user) {
+    if (!titulo_postagem && !genero_postagem && !classificacao_indicativa_postagem && !conteudo_postagem || !id_autor_user) {
+      return res.status(404).json({
+        mensagem: "Bad request ao enviar rascunho"
+      });
+    }
+
+    if (classificacao_indicativa_postagem && classificacao_indicativa_postagem != "18" && classificacao_indicativa_postagem != "L") {
+      return res.status(404).json({
+        mensagem: "Bad request ao enviar rascunho"
+      });
+    }
+
+    const resposta = await postsService.enviaRascunho(titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user);
+
+    if (resposta && resposta.erro) {
+      return res.status(400).json({
+        mensagem: "Houve algum problema ao enviar o rascunho | " + resposta.erro
+      })
+    }
+
+    return res.status(201).json({
+      mensagem: "Rascunho enviado com sucesso",
+    })
+
+  } catch (error) {
+    console.error("Erro interno ao enviar rascunho", error);
+    return res.status(500).json({
+      mensagem: "Erro interno ao enviar rascunho"
+    })
+  }
+
+}
+
+
+async function atualizaRascunho(req, res) {
+
+  try {
+
+    const id_postagem = req.params.id
+
+    const { titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user } = req.body;
+
+    if (!titulo_postagem && !genero_postagem && !classificacao_indicativa_postagem && !conteudo_postagem || !id_autor_user || !id_postagem) {
+      return res.status(404).json({
+        mensagem: "Bad request ao atualizar rascunho"
+      });
+    }
+
+    if (classificacao_indicativa_postagem && classificacao_indicativa_postagem != "18" && classificacao_indicativa_postagem != "L") {
+      return res.status(404).json({
+        mensagem: "Bad request ao atualizar rascunho"
+      });
+    }
+
+    const resposta = await postsService.atualizaRascunho(titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user, id_postagem);
+
+    if (resposta && resposta.erro) {
+      return res.status(400).json({
+        mensagem: "Houve algum problema ao atualizar o rascunho | " + resposta.erro
+      })
+    }
+
+    return res.status(201).json({
+      mensagem: "Rascunho atualizado com sucesso",
+    })
+
+  } catch (error) {
+    console.error("Erro interno ao atualizar rascunho", error);
+    return res.status(500).json({
+      mensagem: "Erro interno ao atualizar rascunho"
+    })
+  }
+
+}
+
+
+async function enviaPostagem(req, res) {
+
+  try {
+    const { titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user, id_postagem } = req.body;
+
+    if (!titulo_postagem || !genero_postagem || !classificacao_indicativa_postagem || !conteudo_postagem || !id_autor_user || id_postagem) {
       return res.status(404).json({
         mensagem: "Bad request ao enviar postagem"
       });
@@ -273,12 +355,13 @@ async function listaPostagem(req, res) {
     }
 
     return res.status(200).json({
-      postagem: resposta
+      postagem: resposta.postagem,
+      autor: resposta.autor
     })
 
     
   } catch (error) {
-    console.error("Erro interno ao listar postagem individual");
+    console.error("Erro interno ao listar postagem individual | ", error);
 
     return res.status(500).json({
       mensagem: "Erro interno ao listar postagem individual"
@@ -289,6 +372,8 @@ async function listaPostagem(req, res) {
 
 module.exports = {
   enviaPostagem,
+  atualizaRascunho,
+  enviaRascunho,
   decideStatusPostagem,
   deletaPostagem,
   listaPostagens,

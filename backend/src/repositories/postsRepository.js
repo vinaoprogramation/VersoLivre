@@ -1,27 +1,64 @@
 const pool = require('../config/database');
 
-async function enviarPostagem(titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user) {
+async function enviarRascunho(titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user) {
 
   try {
 
-    const enviaPostagemQuery = "INSERT INTO postagens (titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user) VALUES (?, ?, ?, ?, ?)";
+    const enviaRascunhoQuery = "INSERT INTO postagens (titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user) VALUES (?, ?, ?, ?, ?)";
 
-    const enviaPostagem = await pool.execute(enviaPostagemQuery, [titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user]);
+    const enviaRascunho = await pool.execute(enviaRascunhoQuery, [titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user]);
 
-    return enviaPostagem.affectedRows;
+    return enviaRascunho.affectedRows;
 
   } catch (error) {
-    console.error("Erro no banco de dados ao criar postagem", error);
-    return {erro: "Erro no banco de dados ao criar postagem"}
+    console.error("Erro no banco de dados ao enviar rascunho", error);
+    return { erro: "Erro no banco de dados ao enviar rascunho" }
   }
 
 }
 
 
-async function enviarImagem(id_postagem, dadosBinarios){
+async function atualizaRascunho(titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_postagem) {
+
 
   try {
-    
+
+    const enviaPostagemQuery = "UPDATE postagens SET titulo_postagem = ?, genero_postagem = ?, classificacao_indicativa_postagem = ?, conteudo_postagem = ? WHERE id_postagem = ?";
+
+    const  enviaPostagem = await pool.execute(enviaPostagemQuery, [titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_postagem]);
+  
+    return enviaPostagem.affectedRows;
+
+  } catch (error) {
+    console.error("Erro no banco de dados ao atualizar postagem", error);
+    return { erro: "Erro no banco de dados ao atualizar postagem" }
+  }
+
+}
+
+
+async function enviaPostagem(titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_postagem) {
+
+
+  try {
+
+    const enviaPostagemQuery = "UPDATE postagens SET titulo_postagem = ?, genero_postagem = ?, classificacao_indicativa_postagem = ?, conteudo_postagem = ? WHERE id_postagem = ?";
+
+    const  enviaPostagem = await pool.execute(enviaPostagemQuery, [titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_postagem]);
+  
+    return enviaPostagem.affectedRows;
+
+  } catch (error) {
+    console.error("Erro no banco de dados ao criar postagem", error);
+    return { erro: "Erro no banco de dados ao criar postagem" }
+  }
+
+}
+
+async function enviarImagem(id_postagem, dadosBinarios) {
+
+  try {
+
     const enviaImagemQuery = "UPDATE postagens SET imagem_postagem = ? WHERE id_postagem = ?";
 
     const [enviaImagem] = await pool.execute(enviaImagemQuery, [dadosBinarios, id_postagem]);
@@ -30,7 +67,7 @@ async function enviarImagem(id_postagem, dadosBinarios){
 
   } catch (error) {
     console.error("Erro no banco de dados ao enviar imagem", error)
-    return {erro: "Erro no banco de dados ao enviar postagem"}
+    return { erro: "Erro no banco de dados ao enviar postagem" }
   }
 
 }
@@ -47,15 +84,15 @@ async function decideStatusPostagem(status_postagem, id_responsavel_postagem, id
 
   } catch (error) {
     console.error("Erro ao atualizar status da postagem", error);
-    return {erro: "Erro no banco de dados ao atualizar status postagem"}
+    return { erro: "Erro no banco de dados ao atualizar status postagem" }
   }
 
 }
 
-async function buscaCriadorPostagem(id_postagem){
+async function buscaCriadorPostagem(id_postagem) {
 
   try {
-    
+
     const buscaCriadorQuery = "SELECT id_autor_user FROM postagens WHERE id_postagem = ?";
 
     const [buscaCriador] = await pool.execute(buscaCriadorQuery, [id_postagem]);
@@ -66,12 +103,12 @@ async function buscaCriadorPostagem(id_postagem){
 
   } catch (error) {
     console.error("Erro ao buscar o criador da postagem", error);
-    return {erro: "Erro no banco de dados ao buscar o criador postagem"}
+    return { erro: "Erro no banco de dados ao buscar o criador postagem" }
   }
 
 }
 
-async function buscaDadosPostagem(id_postagem){
+async function buscaDadosPostagem(id_postagem) {
 
   try {
 
@@ -82,10 +119,10 @@ async function buscaDadosPostagem(id_postagem){
     const dados = buscaDados[0];
 
     return dados;
-    
+
   } catch (error) {
     console.error("Erro ao buscar dados da postagem", error);
-    return {erro: "Erro no banco de dados ao buscar dados da postagem"}
+    return { erro: "Erro no banco de dados ao buscar dados da postagem" }
   }
 
 }
@@ -98,7 +135,7 @@ async function verificaExistenciaPostagem(id_postagem) {
 
     const [verificaExistencia] = await pool.execute(verificaExistenciaQuery, [id_postagem]);
 
-    if(verificaExistencia[0].id_existe === 1){
+    if (verificaExistencia[0].id_existe === 1) {
       return true;
     }
 
@@ -106,38 +143,38 @@ async function verificaExistenciaPostagem(id_postagem) {
 
   } catch (error) {
     console.error("Erro no banco de dados ao verificar existência da postagem", error);
-    return {erro: "Erro no banco de dados ao verificar existência da postagem"}
+    return { erro: "Erro no banco de dados ao verificar existência da postagem" }
   }
 
 }
 
-async function verificaStatusPostagem(id_postagem){
+async function verificaStatusPostagem(id_postagem) {
 
   try {
 
-  const verificaStatusQuery = "SELECT status_postagem FROM postagens WHERE id_postagem = ? AND is_active = true";
+    const verificaStatusQuery = "SELECT status_postagem FROM postagens WHERE id_postagem = ? AND is_active = true";
 
-  const [verificaStatus] = await pool.execute(verificaStatusQuery, [id_postagem])
+    const [verificaStatus] = await pool.execute(verificaStatusQuery, [id_postagem])
 
-  const status = verificaStatus[0].status_postagem;
+    const status = verificaStatus[0].status_postagem;
 
-  if(status != "aprovada" && status != "recusada"){
-    return false;
-  }
+    if (status != "aprovada" && status != "recusada") {
+      return false;
+    }
 
-  return {
-    alterada: true,
-    status: status
-  };
-    
+    return {
+      alterada: true,
+      status: status
+    };
+
   } catch (error) {
     console.error("Erro ao verificar status da postagem", error);
-    return {erro: "Erro no banco de dados ao verificar status da postagem"}
+    return { erro: "Erro no banco de dados ao verificar status da postagem" }
   }
 
 }
 
-async function deletaPostagem(id_postagem, id_responsavel_delete){
+async function deletaPostagem(id_postagem, id_responsavel_delete) {
 
   try {
 
@@ -146,18 +183,18 @@ async function deletaPostagem(id_postagem, id_responsavel_delete){
     const [deletaPostagem] = await pool.execute(deletaPostagemQuery, [id_responsavel_delete, id_postagem]);
 
     return deletaPostagem.affectedRows;
-    
+
   } catch (error) {
     console.error("Erro ao deletar logicamente a postagem", error);
-    return {erro: "Erro no banco de dados ao deletar logicamente a postagem"}
+    return { erro: "Erro no banco de dados ao deletar logicamente a postagem" }
   }
 
 }
 
-async function listaPostagens(offset){
+async function listaPostagens(offset) {
 
   try {
-    
+
     const listaPostagensQuery = 'SELECT * FROM postagens WHERE is_active = true AND status_postagem = "aprovada" ORDER BY id_postagem ASC LIMIT 10 OFFSET ? ';
 
     const [listaPostagens] = await pool.execute(listaPostagensQuery, [(offset - 1) * 10])
@@ -166,50 +203,54 @@ async function listaPostagens(offset){
 
   } catch (error) {
     console.error("Erro ao listar postagens", error);
-    return {erro: "Erro no banco de dados ao listar postagens"}
+    return { erro: "Erro no banco de dados ao listar postagens" }
   }
 
 }
 
-async function listaPostagem(id_postagem){
+async function listaPostagem(id_postagem) {
 
   try {
 
-    const listaPostagemQuery = 'SELECT * FROM postagens WHERE id_postagem = ? AND is_active = true AND status_postagem = "aprovada" ';
+    const listaPostagemQuery = 'SELECT p.*, u.nome_user AS autor_nome FROM postagens p LEFT JOIN users u ON p.id_autor_user = u.id_user WHERE p.id_postagem = ?';
 
     const [listaPostagem] = await pool.execute(listaPostagemQuery, [id_postagem]);
 
+    console.log(listaPostagem[0])
+
     return listaPostagem[0];
-    
+
   } catch (error) {
     console.error("Erro ao listar postagem individual", error);
-    return {erro: "Erro ao listar postagem individual"}
+    return { erro: "Erro ao listar postagem individual" }
   }
 
 }
 
 async function contaOffSets() {
 
-    try {
+  try {
 
-        const contaQuery = "SELECT COUNT(*) as total FROM postagens;"
+    const contaQuery = "SELECT COUNT(*) as total FROM postagens;"
 
-        const [conta] = await pool.execute(contaQuery);
+    const [conta] = await pool.execute(contaQuery);
 
-        const numero = Math.ceil(conta[0].total / 10);
+    const numero = Math.ceil(conta[0].total / 10);
 
-        return numero;
+    return numero;
 
-    } catch (error) {
-        console.error("Erro ao contar o número de offsets no banco", error);
-        return {erro: "Erro no banco de dados ao contar offsets"}
-    }
+  } catch (error) {
+    console.error("Erro ao contar o número de offsets no banco", error);
+    return { erro: "Erro no banco de dados ao contar offsets" }
+  }
 
 
 }
 
 module.exports = {
-  enviarPostagem,
+  enviarRascunho,
+  enviaPostagem,
+  atualizaRascunho,
   enviarImagem,
   decideStatusPostagem,
   verificaExistenciaPostagem,
