@@ -3,10 +3,13 @@ import { useNavigate } from 'react-router-dom';
 
 import useAutenticacao from "../../Service/useAutenticacao";
 
+import usePostagens from "../../Service/usePostagens";
 
 import styles from './styles.module.css'
 
 export default function AdicionarPostagem() {
+  const enviaRascunho = usePostagens((state) => state.enviaRascunho);
+
   const [conteudo, setConteudo] = useState(() => {
     return localStorage.getItem('conteudo')
   });
@@ -70,6 +73,14 @@ export default function AdicionarPostagem() {
     localStorage.setItem('imagePreview', imagePreview)
   }, [imagePreview])
 
+  const handleEnvioRascunho = async(titulo, genero, conteudo) => {
+      const envia = await enviaRascunho(titulo, genero, conteudo);
+
+      if(envia){
+        alert("Rascunho salvo com sucesso")
+      }
+  }
+
   return <>
     <div className={styles.fundo}>
       <div className={styles.entrada}>
@@ -104,7 +115,11 @@ export default function AdicionarPostagem() {
 
           <div className={styles.botoes}>
             <div className={styles.containerBotoes}>
-              <button className={styles.botao}>
+              <button className={styles.botao}
+              onClick={() => {
+                handleEnvioRascunho(titulo, genero, conteudo)
+              }}
+              >
                 Salvar Rascunho
               </button>
 
