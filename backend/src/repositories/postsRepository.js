@@ -243,7 +243,22 @@ async function contaOffSets() {
     console.error("Erro ao contar o número de offsets no banco", error);
     return { erro: "Erro no banco de dados ao contar offsets" }
   }
+}
 
+async function buscaRascunho(id_postagem) {
+
+  try {
+
+    const buscaRascunhoQuery = "SELECT titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, imagem_postagem from postagens WHERE id_postagem = ?";
+
+    const [buscaRascunho] = await pool.execute(buscaRascunhoQuery, [id_postagem]);
+
+    return buscaRascunho[0];
+    
+  } catch (error) {
+    console.error("Erro no banco de dados ao buscar rascunho | ", error);
+    return {erro: "Erro no banco de dados ao buscar rascunho"}
+  }
 
 }
 

@@ -9,12 +9,6 @@ const {
 
 async function enviaRascunho(titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user) {
 
-  const existeAutor = await userRepository.existeUsuario(null, id_autor_user);
-
-  if (!existeAutor) {
-    return { erro: "Autor não existe" }
-  }
-
   let titulo;
   let genero;
   let classificacao;
@@ -56,19 +50,6 @@ async function enviaRascunho(titulo_postagem, genero_postagem, classificacao_ind
 
 async function atualizaRascunho(titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user, id_postagem) {
 
-  const existePostagem = await postsRepository.verificaExistenciaPostagem(id_postagem);
-
-  if (!existePostagem) {
-    return { erro: "Postagem referenciada não existe" }
-  }
-
-
-  const existeAutor = await userRepository.existeUsuario(null, id_autor_user);
-
-  if (!existeAutor) {
-    return { erro: "Autor não existe" }
-  }
-
   const validaAutor = await postsRepository.buscaCriadorPostagem(id_postagem);
 
   if (validaAutor != id_autor_user) {
@@ -80,6 +61,7 @@ async function atualizaRascunho(titulo_postagem, genero_postagem, classificacao_
   if(buscaDados.length === 0){
     return {erro: "Postagem vazia"}
   }
+
 
   let titulo;
   let genero;
@@ -120,15 +102,7 @@ async function atualizaRascunho(titulo_postagem, genero_postagem, classificacao_
 
 }
 
-
-
 async function enviaPostagem(titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user, id_postagem) {
-
-  const existeAutor = await userRepository.existeUsuario(null, id_autor_user);
-
-  if (!existeAutor) {
-    return { erro: "Autor não existe" }
-  }
 
   const validaAutor = await postsRepository.buscaCriadorPostagem(id_postagem);
 
@@ -172,13 +146,7 @@ async function enviaImagem(id_postagem, buffer, tipo) {
   if (tipo !== tipoReal.mime) {
     return { erro: "O tipo de arquivo informado não corresponde ao tipo de arquivo enviado" }
   }
-
-  const postagem = await postsRepository.verificaExistenciaPostagem(id_postagem);
-
-  if (!postagem) {
-    return { erro: "Postagem não encontrada" }
-  }
-
+  
   const envio = await postsRepository.enviarImagem(id_postagem, buffer);
 
   if (envio === 0) {

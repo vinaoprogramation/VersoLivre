@@ -53,7 +53,11 @@ async function enviaImagem(req, res) {
 async function enviaRascunho(req, res) {
 
   try {
-    const { titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user } = req.body;
+    const { titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem} = req.body;
+
+    const token = await extractBearerToken(req.headers);
+
+    const id_autor_user = await verificarToken(token).id_user;
 
     if (!titulo_postagem && !genero_postagem && !classificacao_indicativa_postagem && !conteudo_postagem || !id_autor_user) {
       return res.status(404).json({
@@ -369,6 +373,8 @@ async function listaPostagem(req, res) {
   }
 
 }
+
+
 
 module.exports = {
   enviaPostagem,
