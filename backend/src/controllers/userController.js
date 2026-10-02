@@ -26,7 +26,7 @@ async function postUser(req, res) {
             })
         }
 
-        return res.status(201).json({
+        return res.status(201).json({    
             mensagem: "Usuário criado com sucesso",
             nome: nome_user,
             email: email_user

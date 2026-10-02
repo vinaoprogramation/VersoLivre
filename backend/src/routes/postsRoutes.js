@@ -13,6 +13,7 @@ const {
   deletaPostagem,
   listaPostagens,
   listaPostagem,
+  buscaRascunho,
 } = require('../controllers/postsController');
 
 const router = express.Router();
@@ -22,9 +23,9 @@ router.use(acesso);
 router.post('/', enviaPostagem);
 router.post('/sketch', enviaRascunho);
 router.put('/update/:id', atualizaRascunho)
-
 router.put('/file/:id', uploadConfig.single('imagem_postagem'), enviaImagem)
 router.delete('/', deletaPostagem);
+router.get('/sketch/:id', buscaRascunho);
 router.get('/:offset', listaPostagens)
 router.get('/single/:id', listaPostagem)
 

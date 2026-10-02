@@ -40,9 +40,10 @@ async function enviaRascunho(titulo_postagem, genero_postagem, classificacao_ind
 
   const envia = await postsRepository.enviarRascunho(titulo, genero, classificacao, conteudo, id_autor_user);
 
-  if (envia === 0) {
+  if (envia.affectedRows === 0) {
     return { erro: "Erro interno ao enviar rascunho" }
   }
+
   return envia;
 
 }
@@ -163,18 +164,6 @@ async function enviaImagem(id_postagem, buffer, tipo) {
 
 async function decideStatusPostagem(status_postagem, id_responsavel_postagem, id_postagem, mensagem) {
 
-  const verificaPostagem = await postsRepository.verificaExistenciaPostagem(id_postagem);
-
-  if (!verificaPostagem) {
-    return { erro: "Postagem não existe" };
-  }
-
-  const verificaResponsavel = await userRepository.existeUsuario(null, id_responsavel_postagem);
-
-  if (!verificaResponsavel) {
-    return { erro: "Usuário não existe" };
-  }
-
   const verificaAutor = await postsRepository.buscaCriadorPostagem(id_postagem);
 
   if (verificaAutor == id_responsavel_postagem) {
@@ -199,18 +188,6 @@ async function decideStatusPostagem(status_postagem, id_responsavel_postagem, id
 
 async function deletaPostagem(id_postagem, id_responsavel_delete, role_user) {
 
-  const verificaPostagem = await postsRepository.verificaExistenciaPostagem(id_postagem);
-
-  if (!verificaPostagem) {
-    return { erro: "Postagem não existe" };
-  }
-
-  const verificaResponsavel = await userRepository.existeUsuario(null, id_responsavel_delete);
-
-  if (!verificaResponsavel) {
-    return { erro: "Usuário não existe" };
-  }
-
   const verificaAutor = await postsRepository.buscaCriadorPostagem(id_postagem);
 
   if (verificaAutor == id_responsavel_delete || verificaAutor != id_responsavel_delete && role_user == "admin") {
@@ -226,6 +203,24 @@ async function deletaPostagem(id_postagem, id_responsavel_delete, role_user) {
   } else {
     return { erro: "O usuário não tem permissão para deletar esta postagem" }
   }
+
+}
+
+async function buscaRascunho(id_postagem, id_autor_user) {
+
+  const verificaAutor = await postsRepository.buscaCriadorPostagem(id_postagem);
+
+  if (verificaAutor !== id_autor_user) {
+    return { erro: "O usuário não é o autor desta postagem" }
+  }
+
+  const buscaRascunho = await postsRepository.buscaRascunho(id_postagem);
+
+  if(buscaRascunho.length === 0){
+    return {erro: "Rascunho não encontrado"}
+  }
+
+  return buscaRascunho;
 
 }
 
@@ -277,6 +272,7 @@ module.exports = {
   enviaImagem,
   decideStatusPostagem,
   deletaPostagem,
+  buscaRascunho,
   listaPostagens,
   listaPostagem,
 }

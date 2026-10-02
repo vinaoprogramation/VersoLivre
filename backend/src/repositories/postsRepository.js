@@ -6,9 +6,15 @@ async function enviarRascunho(titulo_postagem, genero_postagem, classificacao_in
 
     const enviaRascunhoQuery = "INSERT INTO postagens (titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user) VALUES (?, ?, ?, ?, ?)";
 
-    const enviaRascunho = await pool.execute(enviaRascunhoQuery, [titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user]);
+    const [enviaRascunho] = await pool.execute(enviaRascunhoQuery, [titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user]);
 
-    return enviaRascunho.affectedRows;
+    if(enviaRascunho.affectedRows === 0){
+      return enviaRascunho.affectedRows;
+    }
+
+    const id_envio = enviaRascunho.insertId;
+
+    return {affectedRows: enviaRascunho.affectedRows, id_postagem: id_envio};
 
   } catch (error) {
     console.error("Erro no banco de dados ao enviar rascunho", error);
@@ -126,6 +132,24 @@ async function buscaDadosPostagem(id_postagem) {
   }
 
 }
+
+async function buscaRascunho(id_postagem) {
+
+  try{
+
+    const buscaRascunhoQuery = "SELECT titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, imagem_postagem from postagens WHERE id_postagem = ?";
+
+    const [buscaRascunho] = await pool.execute(buscaRascunhoQuery, [id_postagem]);
+
+    return buscaRascunho[0];
+
+  }catch(error){
+    console.error("Erro ao buscar rascunho da postagem", error);
+    return { erro: "Erro no banco de dados ao buscar rascunho da postagem" }
+  }
+
+}
+
 
 async function verificaExistenciaPostagem(id_postagem) {
 
@@ -272,6 +296,7 @@ module.exports = {
   verificaStatusPostagem,
   buscaCriadorPostagem,
   buscaDadosPostagem,
+  buscaRascunho,
   deletaPostagem,
   listaPostagens,
   listaPostagem,

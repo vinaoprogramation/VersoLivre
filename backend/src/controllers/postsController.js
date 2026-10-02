@@ -81,6 +81,7 @@ async function enviaRascunho(req, res) {
 
     return res.status(201).json({
       mensagem: "Rascunho enviado com sucesso",
+      id_postagem: resposta.id_postagem,
     })
 
   } catch (error) {
@@ -273,6 +274,38 @@ async function deletaPostagem(req, res) {
 
 }
 
+async function buscaRascunho(req, res) {
+
+  try{
+
+    const id_postagem = req.params.id;
+
+    const token = await extractBearerToken(req.headers);
+
+    const id_autor_user = await verificarToken(token).id_user;
+
+    const resposta = await postsService.buscaRascunho(id_postagem, id_autor_user);
+
+    if (resposta && resposta.erro) {
+      return res.status(400).json({
+        mensagem: "Houve algum problema ao buscar o rascunho | " + resposta.erro
+      })
+    }
+
+    return res.status(200).json({
+      rascunho: resposta
+    })
+
+  }catch (error) {
+    console.error("Erro interno ao buscar rascunho");
+
+    return res.status(500).json({
+      mensagem: "Erro interno ao buscar rascunho"
+    })
+  }
+
+}
+
 async function listaPostagens(req, res) {
 
   try {
@@ -320,8 +353,6 @@ async function listaPostagens(req, res) {
 
   } catch (error) {
     console.error("Erro interno ao listar as postagens");
-
-    console.log(error)
 
     return res.status(500).json({
       mensagem: "Erro interno ao listar as postagens",
@@ -382,6 +413,7 @@ module.exports = {
   enviaRascunho,
   decideStatusPostagem,
   deletaPostagem,
+  buscaRascunho,
   listaPostagens,
   listaPostagem,
   enviaImagem,
