@@ -47,8 +47,8 @@ export default function AdicionarPostagem() {
   });
 
   useEffect(() => {
-    localStorage.setItem('titulo', titulo)
-  }, [titulo])
+    localStorage.setItem('id', id)
+  }, [id])
 
   useEffect(() => {
     if (carregaRascunho && idRascunho) {
@@ -56,25 +56,40 @@ export default function AdicionarPostagem() {
     }
   }, [carregaRascunho, idRascunho])
 
-  useEffect(() => {
+  const inicia = async (rascunho) => {
     if (rascunho) {
       console.log("Rascunho que chegou: ", rascunho)
       setTitulo(rascunho.titulo_postagem)
       setGenero(rascunho.genero_postagem)
       setConteudo(rascunho.conteudo_postagem)
       setId(rascunho.id_postagem)
-      if(rascunho?.imagem_postagem?.data){
-      const arquivoBytes = new Uint8Array(rascunho?.imagem_postagem?.data);
-      const blob = new Blob([arquivoBytes], { type: rascunho?.imagem_postagem?.type });
-      const objectUrl = URL.createObjectURL(blob);
-      setImagePreview(objectUrl)
-      } else{
-        localStorage.setItem("titulo", "");
-        localStorage.setItem("genero", "");
-        localStorage.setItem("conteudo", "");
-        localStorage.setItem("id", "");
+      if (rascunho?.imagem_postagem?.data) {
+        const arquivoBytes = new Uint8Array(rascunho?.imagem_postagem?.data);
+        const blob = new Blob([arquivoBytes], { type: rascunho?.imagem_postagem?.type });
+        const objectUrl = URL.createObjectURL(blob);
+        setImagePreview(objectUrl)
+      } else {
+        if (localStorage.getItem(id)) {
+          const carregando = carregaRascunho(id)
+          setTitulo(rascunho.titulo_postagem)
+          setGenero(rascunho.genero_postagem)
+          setConteudo(rascunho.conteudo_postagem)
+          setId(rascunho.id_postagem)
+          if (rascunho?.imagem_postagem?.data) {
+            const arquivoBytes = new Uint8Array(rascunho?.imagem_postagem?.data);
+            const blob = new Blob([arquivoBytes], { type: rascunho?.imagem_postagem?.type });
+            const objectUrl = URL.createObjectURL(blob);
+            setImagePreview(objectUrl)
+          }
+
+        }
       }
     }
+  }
+
+
+  useEffect(() => {
+    inicia(rascunho)
   }, [rascunho])
 
   const handleKeyDown = (e) => {
@@ -128,7 +143,7 @@ export default function AdicionarPostagem() {
   }
 
   const handleAtualizaRascunho = async (titulo, genero, conteudo, file) => {
-    
+
     const atualiza = await atualizaRascunho(titulo, genero, conteudo, file);
 
     if (atualiza) {
@@ -139,11 +154,11 @@ export default function AdicionarPostagem() {
 
   }
 
-  const deleta = async() => {
+  const deleta = async () => {
 
     const deletaAcao = await deletaRascunho();
 
-    if(!deletaAcao){
+    if (!deletaAcao) {
       return;
     }
 
@@ -189,13 +204,13 @@ export default function AdicionarPostagem() {
               <button className={styles.botao}
                 onClick={() => {
 
-                  if(rascunho){
+                  if (rascunho) {
                     handleAtualizaRascunho(titulo, genero, conteudo, file)
                     return;
-                  } else{
+                  } else {
                     handleEnvioRascunho(titulo, genero, conteudo, file)
                   }
-                  
+
                 }}
               >
                 Salvar Rascunho
@@ -215,9 +230,9 @@ export default function AdicionarPostagem() {
 
             <div className={styles.containerBotoes}>
               <button className={styles.botao}
-              onClick={() => {
-                deleta()
-              }}
+                onClick={() => {
+                  deleta()
+                }}
               >
                 Excluir Rascunho
               </button>

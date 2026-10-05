@@ -365,7 +365,7 @@ const usePostagens = create(
         }
 
         const response = await api.delete(`${BASE_URL}/sketch`, {
-          data: {id_postagem: id_rascunho}
+          data: { id_postagem: id_rascunho }
         });
 
         if (response.status !== 200) {
