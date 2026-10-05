@@ -10,7 +10,7 @@ import Login from './Telas/Login';
 import HomeScreen from './Telas/HomeScreen';
 import DetailScreen from './Telas/DetailsScreen';
 import AdicionarPostagem from './Telas/AdicionarPostagem'
-
+import Cadastro from './Telas/Cadastro'
 
 function App() {
 
@@ -22,6 +22,8 @@ function App() {
         <Routes>
 
           <Route path="/" element={<Login />} />
+
+          <Route path="/Cadastro" element={<Cadastro />} />
 
           <Route path="/HomeScreen" element={<HomeScreen />} />
 

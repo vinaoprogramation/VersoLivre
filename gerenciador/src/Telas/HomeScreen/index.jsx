@@ -12,7 +12,11 @@ import usePostagens from "../../Service/usePostagens"
 export default function HomeScreen() {
   const carregaPostagens = usePostagens((state) => state.carregaPostagens);
   const postagens = usePostagens((state) => state.postagens);
+  const rascunhos = usePostagens((state) => state.rascunhos);
+  const carregaRascunhos = usePostagens((state) => state.carregaRascunhos);
   const setIdPostagem = usePostagens((state) => state.setIdPostagem);
+  const setIdRascunho = usePostagens((state) => state.setIdRascunho);
+  const anulaRascunho = usePostagens((state) => state.anulaRascunho);
 
   const navigate = useNavigate();
 
@@ -20,12 +24,49 @@ export default function HomeScreen() {
     if (carregaPostagens) {
       carregaPostagens();
     }
-  }, [carregaPostagens])
-
+    if (carregaRascunhos) {
+      carregaRascunhos();
+    }
+  }, [carregaPostagens, carregaRascunhos])
 
   return <>
     <div className={styles.fundo}>
       <div className={styles.entrada}>
+
+
+        {
+          rascunhos && rascunhos.length > 0 ?
+            <>
+              <h1 className={styles.tituloRascunhos}>Rascunhos</h1>
+
+              <div className={styles.rascunhosContainer}>
+                {rascunhos.map((item) => <>
+                  <div className={styles.rascunhoItem}
+                    key={item.id_postagem}
+                    onClick={async () => {
+                      const setaId = await setIdRascunho(item?.id_postagem);
+                      if(setaId) {
+                        navigate(`/Adicionar/Postagem`)
+                      }
+                    }}
+                  >
+                    <h2 className={styles.tituloRascunho}>
+                      {item.titulo_postagem}
+                    </h2>
+                    <p className={styles.conteudoRascunho}>
+                      {item.conteudo_postagem}
+                    </p>
+                  </div>
+                </>)}
+              </div>
+
+            </>
+
+            :
+
+            null
+        }
+        
 
         {
           postagens ?
@@ -62,6 +103,7 @@ export default function HomeScreen() {
               <h1 className={styles.textoNulo}>Não há postagens no momento... Adicione uma!</h1>
               <div className={styles.botaoAdicionar}
               onClick={() => {
+                anulaRascunho();
                 navigate('/Adicionar/Postagem')
               }}
               >

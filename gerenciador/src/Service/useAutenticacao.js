@@ -38,8 +38,38 @@ const useAutenticacao = create((set, get) => ({
 
       
     }catch(error){
-      console.error("Erro no login");
+      console.error("Erro no login", error);
       return;
+    }
+  },
+
+
+  cadastro: async(nome, email, senha) => {
+    if(!nome || !email || !senha){
+      return;
+    }
+
+    try{
+      const response = await api.post(`${BASE_URL}/post`,{
+          nome_user: nome,
+          email_user: email,
+          senha_user: senha
+        }
+      )
+
+      if(response.status === 201){
+        const loga = await get().login(email, senha);
+        if(loga){
+          return true;
+        }
+      }
+
+      return false;
+
+      
+    }catch(error){
+      console.error("Erro no login", error);
+      return false;
     }
   }
 

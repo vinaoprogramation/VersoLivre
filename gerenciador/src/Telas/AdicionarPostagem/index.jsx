@@ -9,6 +9,10 @@ import styles from './styles.module.css'
 
 export default function AdicionarPostagem() {
   const enviaRascunho = usePostagens((state) => state.enviaRascunho);
+  const atualizaRascunho = usePostagens((state) => state.atualizaRascunho);
+  const carregaRascunho = usePostagens((state) => state.carregaRascunho);
+  const rascunho = usePostagens((state) => state.rascunho);
+  const idRascunho = usePostagens((state) => state.idRascunho);
 
   const [conteudo, setConteudo] = useState(() => {
     return localStorage.getItem('conteudo')
@@ -36,6 +40,27 @@ export default function AdicionarPostagem() {
     localStorage.setItem('titulo', titulo)
   }, [titulo])
 
+  useEffect(() => {
+    if (carregaRascunho && idRascunho) {
+      carregaRascunho(idRascunho);
+    }
+  }, [carregaRascunho, idRascunho])
+
+  useEffect(() => {
+    if (rascunho) {
+      console.log("Rascunho que chegou: ", rascunho)
+      setTitulo(rascunho.titulo_postagem)
+      setGenero(rascunho.genero_postagem)
+      setConteudo(rascunho.conteudo_postagem)
+      if(rascunho?.imagem_postagem?.data){
+      const arquivoBytes = new Uint8Array(rascunho?.imagem_postagem?.data);
+      const blob = new Blob([arquivoBytes], { type: rascunho?.imagem_postagem?.type });
+      const objectUrl = URL.createObjectURL(blob);
+      setImagePreview(objectUrl)
+      }
+    }
+  }, [rascunho])
+
   const handleKeyDown = (e) => {
     if (e.key === 'Tab') {
       e.preventDefault();
@@ -55,7 +80,8 @@ export default function AdicionarPostagem() {
     }
   };
 
-  
+
+  const [file, setFile] = useState(null);
 
   const [imagePreview, setImagePreview] = useState(() => {
     return localStorage.getItem('imagePreview')
@@ -66,6 +92,7 @@ export default function AdicionarPostagem() {
     if (file) {
       const objectUrl = URL.createObjectURL(file);
       setImagePreview(objectUrl)
+      setFile(file);
     }
   }
 
@@ -73,12 +100,27 @@ export default function AdicionarPostagem() {
     localStorage.setItem('imagePreview', imagePreview)
   }, [imagePreview])
 
-  const handleEnvioRascunho = async(titulo, genero, conteudo) => {
-      const envia = await enviaRascunho(titulo, genero, conteudo);
+  const handleEnvioRascunho = async (titulo, genero, conteudo, file) => {
 
-      if(envia){
-        alert("Rascunho salvo com sucesso")
-      }
+    const envia = await enviaRascunho(titulo, genero, conteudo, file);
+
+    if (envia) {
+      alert("Rascunho salvo com sucesso")
+    }
+
+    console.log(titulo, genero, conteudo, file)
+  }
+
+  const handleAtualizaRascunho = async (titulo, genero, conteudo, file) => {
+    
+    const atualiza = await atualizaRascunho(titulo, genero, conteudo, file);
+
+    if (atualiza) {
+      alert("Rascunho atualizado com sucesso")
+    }
+
+    console.log(titulo, genero, conteudo, file)
+
   }
 
   return <>
@@ -116,9 +158,16 @@ export default function AdicionarPostagem() {
           <div className={styles.botoes}>
             <div className={styles.containerBotoes}>
               <button className={styles.botao}
-              onClick={() => {
-                handleEnvioRascunho(titulo, genero, conteudo)
-              }}
+                onClick={() => {
+
+                  if(rascunho){
+                    handleAtualizaRascunho(titulo, genero, conteudo, file)
+                    return;
+                  } else{
+                    handleEnvioRascunho(titulo, genero, conteudo, file)
+                  }
+                  
+                }}
               >
                 Salvar Rascunho
               </button>

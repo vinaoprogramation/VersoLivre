@@ -65,14 +65,3 @@
   color: #ffffff;
   font-weight: 600;
 }
-
-
-.textoCadastro{
-  color: #885c32;
-  font-weight: 600;
-}
-
-.textoCadastro:hover{
-  cursor: pointer;
-  text-decoration: underline;
-}

@@ -5,25 +5,26 @@ import useAutenticacao from "../../Service/useAutenticacao";
 
 import styles from './styles.module.css'
 
-export default function Login(){
-  const login = useAutenticacao((state) => state.login);
+export default function Cadastro(){
+  const cadastro = useAutenticacao((state) => state.cadastro);
   const autenticado = useAutenticacao((state) => state.autenticado);
 
   const navigate = useNavigate();
 
+  const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
-  const fazLogin = async (email, senha) => {
-    if(!email || !senha){
+  const fazCadastro = async (nome, email, senha) => {
+    if(!nome || !email || !senha){
       return;
     }
 
-    if(login){
-      const loga = await login(email, senha);
-      if(loga){
+    if(cadastro){
+      const cadastrado = await cadastro(nome, email, senha);
+      if(cadastrado){
         if(autenticado){
-          navigate('/HomeScreen')
+          navigate('../HomeScreen')
         }
       }
     }
@@ -32,6 +33,16 @@ export default function Login(){
   return <>
   <div className={styles.fundo}>
     <div className={styles.entrada}>
+      <h1>Cadastro</h1>
+
+      <input
+      placeholder="Nome"
+      value={nome}
+      onChange={(e) => setNome(e.target.value)}
+      type="text"
+      className={styles.input}
+      />
+
       <input
       placeholder="Email"
       value={email}
@@ -51,21 +62,12 @@ export default function Login(){
       <button
         className={styles.botao}
         onClick={() => {
-          fazLogin(email, senha)
+          fazCadastro(nome, email, senha)
         }}
 
       >
-        <p className={styles.textoBotao}>Entrar</p>
+        <p className={styles.textoBotao}>Cadastrar</p>
       </button>
-
-      <button
-        className={styles.botaoTexto}
-        onClick={() => {
-          navigate('/Cadastro')
-        }}
-        >
-        <p className={styles.textoCadastro}>Cadastrar</p>
-        </button>
     </div>
   </div>
     
