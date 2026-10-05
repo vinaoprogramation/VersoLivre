@@ -98,9 +98,13 @@ async function atualizaRascunho(req, res) {
 
   try {
 
-    const id_postagem = req.params.id
+    const id_postagem = req.params.id;
 
-    const { titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user } = req.body;
+    const token = await extractBearerToken(req.headers);
+
+    const id_autor_user = await verificarToken(token).id_user;
+
+    const { titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem } = req.body;
 
     if (!titulo_postagem && !genero_postagem && !classificacao_indicativa_postagem && !conteudo_postagem || !id_autor_user || !id_postagem) {
       return res.status(404).json({
@@ -114,7 +118,7 @@ async function atualizaRascunho(req, res) {
       });
     }
 
-    const resposta = await postsService.atualizaRascunho(titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user, id_postagem);
+    const resposta = await postsService.atualizaRascunho(id_postagem, titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user);
 
     if (resposta && resposta.erro) {
       return res.status(400).json({
@@ -284,6 +288,12 @@ async function buscaRascunho(req, res) {
 
     const id_autor_user = await verificarToken(token).id_user;
 
+    if(!id_postagem || !id_autor_user){
+      return res.status(404).json({
+        mensagem: "Bad request ao buscar rascunho"
+      })
+    }
+
     const resposta = await postsService.buscaRascunho(id_postagem, id_autor_user);
 
     if (resposta && resposta.erro) {
@@ -301,6 +311,42 @@ async function buscaRascunho(req, res) {
 
     return res.status(500).json({
       mensagem: "Erro interno ao buscar rascunho"
+    })
+  }
+
+}
+
+async function listaRascunhos(req, res) {
+
+  try{
+
+    const token = await extractBearerToken(req.headers);
+
+    const id_autor_user = await verificarToken(token).id_user;
+
+    if(!id_autor_user){
+      return res.status(404).json({
+        mensagem: "Bad request ao listar rascunhos"
+      })
+    }
+
+    const resposta = await postsService.listaRascunhos(id_autor_user);
+
+    if (resposta && resposta.erro) {
+      return res.status(400).json({
+        mensagem: "Houve algum problema ao listar os rascunhos | " + resposta.erro
+      })
+    }
+
+    return res.status(200).json({
+      rascunhos: resposta
+    })
+
+  }catch (error) {
+    console.error("Erro interno ao listar rascunhos");
+
+    return res.status(500).json({
+      mensagem: "Erro interno ao listar rascunhos"
     })
   }
 
@@ -414,6 +460,7 @@ module.exports = {
   decideStatusPostagem,
   deletaPostagem,
   buscaRascunho,
+  listaRascunhos,
   listaPostagens,
   listaPostagem,
   enviaImagem,

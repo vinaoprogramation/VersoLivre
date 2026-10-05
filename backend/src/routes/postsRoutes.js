@@ -13,6 +13,7 @@ const {
   deletaPostagem,
   listaPostagens,
   listaPostagem,
+  listaRascunhos,
   buscaRascunho,
 } = require('../controllers/postsController');
 
@@ -26,8 +27,9 @@ router.put('/update/:id', atualizaRascunho)
 router.put('/file/:id', uploadConfig.single('imagem_postagem'), enviaImagem)
 router.delete('/', deletaPostagem);
 router.get('/sketch/:id', buscaRascunho);
-router.get('/:offset', listaPostagens)
+router.get('/on/:offset', listaPostagens)
 router.get('/single/:id', listaPostagem)
+router.get('/sketches', listaRascunhos)
 
 router.use(adminAcess);
 

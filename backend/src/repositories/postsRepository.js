@@ -24,7 +24,7 @@ async function enviarRascunho(titulo_postagem, genero_postagem, classificacao_in
 }
 
 
-async function atualizaRascunho(titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_postagem) {
+async function atualizaRascunho(id_postagem, titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem) {
 
 
   try {
@@ -240,8 +240,6 @@ async function listaPostagem(id_postagem) {
 
     const [listaPostagem] = await pool.execute(listaPostagemQuery, [id_postagem]);
 
-    console.log(listaPostagem[0])
-
     return listaPostagem[0];
 
   } catch (error) {
@@ -267,6 +265,23 @@ async function contaOffSets() {
     console.error("Erro ao contar o número de offsets no banco", error);
     return { erro: "Erro no banco de dados ao contar offsets" }
   }
+}
+
+async function listaRascunhos(id_autor_user) {
+
+  try {
+
+    const listaRascunhosQuery = "SELECT id_postagem, titulo_postagem, genero_postagem FROM postagens WHERE id_autor_user = ? AND is_active = true AND status_escrita = 'rascunho'";
+
+    const [listaRascunhos] = await pool.execute(listaRascunhosQuery, [id_autor_user]);
+
+    return listaRascunhos;
+
+  } catch (error) {
+    console.error("Erro ao listar rascunhos do usuário", error);
+    return { erro: "Erro no banco de dados ao listar rascunhos do usuário" }
+  }
+
 }
 
 async function buscaRascunho(id_postagem) {
@@ -300,5 +315,6 @@ module.exports = {
   deletaPostagem,
   listaPostagens,
   listaPostagem,
+  listaRascunhos,
   contaOffSets,
 }

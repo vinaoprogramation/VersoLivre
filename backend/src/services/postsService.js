@@ -49,7 +49,7 @@ async function enviaRascunho(titulo_postagem, genero_postagem, classificacao_ind
 }
 
 
-async function atualizaRascunho(titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user, id_postagem) {
+async function atualizaRascunho(id_postagem, titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user) {
 
   const validaAutor = await postsRepository.buscaCriadorPostagem(id_postagem);
 
@@ -93,7 +93,7 @@ async function atualizaRascunho(titulo_postagem, genero_postagem, classificacao_
     conteudo = conteudo_postagem
   }
 
-  const envia = await postsRepository.atualizaRascunho(titulo, genero, classificacao, conteudo, id_autor_user);
+  const envia = await postsRepository.atualizaRascunho(id_postagem, titulo, genero, classificacao, conteudo, id_autor_user);
 
   if (envia === 0) {
     return { erro: "Erro interno ao atualizar rascunho" }
@@ -224,6 +224,18 @@ async function buscaRascunho(id_postagem, id_autor_user) {
 
 }
 
+async function listaRascunhos(id_autor_user) {
+
+  const buscaRascunhos = await postsRepository.listaRascunhos(id_autor_user);
+
+  if(buscaRascunhos.length === 0){
+    return {erro: "Nenhum rascunho encontrado"}
+  }
+
+  return buscaRascunhos;
+
+}
+
 async function listaPostagens(offset) {
 
   const contaOffSet = await postsRepository.contaOffSets();
@@ -275,4 +287,5 @@ module.exports = {
   buscaRascunho,
   listaPostagens,
   listaPostagem,
+  listaRascunhos,
 }
