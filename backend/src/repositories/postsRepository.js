@@ -215,6 +215,23 @@ async function deletaPostagem(id_postagem, id_responsavel_delete) {
 
 }
 
+async function deletaRascunho(id_postagem) {
+
+  try {
+
+    const deletaRascunhoQuery = "UPDATE postagens SET is_active = false WHERE id_postagem = ?";
+
+    const [deletaRascunho] = await pool.execute(deletaRascunhoQuery, [id_postagem]);
+
+    return deletaRascunho.affectedRows;
+
+  } catch (error) {
+    console.error("Erro ao deletar logicamente o rascunho", error);
+    return { erro: "Erro no banco de dados ao deletar logicamente o rascunho" }
+  }
+
+}
+
 async function listaPostagens(offset) {
 
   try {
@@ -313,6 +330,7 @@ module.exports = {
   buscaDadosPostagem,
   buscaRascunho,
   deletaPostagem,
+  deletaRascunho,
   listaPostagens,
   listaPostagem,
   listaRascunhos,

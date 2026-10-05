@@ -53,7 +53,7 @@ async function enviaImagem(req, res) {
 async function enviaRascunho(req, res) {
 
   try {
-    const { titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem} = req.body;
+    const { titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem } = req.body;
 
     const token = await extractBearerToken(req.headers);
 
@@ -278,9 +278,59 @@ async function deletaPostagem(req, res) {
 
 }
 
+async function deletaRascunho(req, res) {
+
+  try {
+
+    const { id_postagem } = req.body;
+
+    const token = await extractBearerToken(req.headers);
+
+    const id_autor_user = await verificarToken(token).id_user;
+
+    if (!id_postagem || !id_autor_user) {
+      return res.status(404).json({
+        mensagem: "Bad request ao deletar rascunho"
+      })
+    }
+
+    if (id_postagem <= 0 || !(Number.isInteger(id_postagem))) {
+      return res.status(404).json({
+        mensagem: "Bad request ao deletar rascunho"
+      })
+    }
+
+    if (id_autor_user <= 0 || !(Number.isInteger(id_autor_user))) {
+      return res.status(404).json({
+        mensagem: "Bad request ao deletar rascunho"
+      })
+    }
+
+    const resposta = await postsService.deletaRascunho(id_postagem, id_autor_user);
+
+    if (resposta && resposta.erro) {
+      return res.status(400).json({
+        mensagem: "Houve algum problema ao deletar o rascunho | " + resposta.erro
+      })
+    }
+
+    return res.status(200).json({
+      mensagem: "Rascunho deletado com sucesso"
+    })
+
+  } catch (error) {
+    console.error("Erro interno ao deletar rascunho", error);
+
+    return res.status(500).json({
+      mensagem: `Erro interno ao deletar rascunho`
+    })
+  }
+
+}
+
 async function buscaRascunho(req, res) {
 
-  try{
+  try {
 
     const id_postagem = req.params.id;
 
@@ -288,7 +338,7 @@ async function buscaRascunho(req, res) {
 
     const id_autor_user = await verificarToken(token).id_user;
 
-    if(!id_postagem || !id_autor_user){
+    if (!id_postagem || !id_autor_user) {
       return res.status(404).json({
         mensagem: "Bad request ao buscar rascunho"
       })
@@ -306,7 +356,7 @@ async function buscaRascunho(req, res) {
       rascunho: resposta
     })
 
-  }catch (error) {
+  } catch (error) {
     console.error("Erro interno ao buscar rascunho");
 
     return res.status(500).json({
@@ -318,13 +368,13 @@ async function buscaRascunho(req, res) {
 
 async function listaRascunhos(req, res) {
 
-  try{
+  try {
 
     const token = await extractBearerToken(req.headers);
 
     const id_autor_user = await verificarToken(token).id_user;
 
-    if(!id_autor_user){
+    if (!id_autor_user) {
       return res.status(404).json({
         mensagem: "Bad request ao listar rascunhos"
       })
@@ -342,7 +392,7 @@ async function listaRascunhos(req, res) {
       rascunhos: resposta
     })
 
-  }catch (error) {
+  } catch (error) {
     console.error("Erro interno ao listar rascunhos");
 
     return res.status(500).json({
@@ -440,7 +490,7 @@ async function listaPostagem(req, res) {
       autor: resposta.autor
     })
 
-    
+
   } catch (error) {
     console.error("Erro interno ao listar postagem individual | ", error);
 
@@ -459,6 +509,7 @@ module.exports = {
   enviaRascunho,
   decideStatusPostagem,
   deletaPostagem,
+  deletaRascunho,
   buscaRascunho,
   listaRascunhos,
   listaPostagens,

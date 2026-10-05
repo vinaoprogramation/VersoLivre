@@ -206,6 +206,25 @@ async function deletaPostagem(id_postagem, id_responsavel_delete, role_user) {
 
 }
 
+
+async function deletaRascunho(id_postagem, id_autor_user) {
+
+  const verificaAutor = await postsRepository.buscaCriadorPostagem(id_postagem);
+
+  if (verificaAutor != id_autor_user) {
+    return { erro: "O usuário não é o autor desta postagem" }
+  }
+
+  const deleteMethod = await postsRepository.deletaRascunho(id_postagem);
+
+  if (deleteMethod === 0) {
+    return { erro: "Erro ao deletar o rascunho" }
+  }
+
+  return deleteMethod;
+
+}
+
 async function buscaRascunho(id_postagem, id_autor_user) {
 
   const verificaAutor = await postsRepository.buscaCriadorPostagem(id_postagem);
@@ -284,6 +303,7 @@ module.exports = {
   enviaImagem,
   decideStatusPostagem,
   deletaPostagem,
+  deletaRascunho,
   buscaRascunho,
   listaPostagens,
   listaPostagem,

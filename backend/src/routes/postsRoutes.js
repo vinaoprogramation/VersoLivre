@@ -11,6 +11,7 @@ const {
   enviaImagem,
   decideStatusPostagem,
   deletaPostagem,
+  deletaRascunho,
   listaPostagens,
   listaPostagem,
   listaRascunhos,
@@ -26,6 +27,7 @@ router.post('/sketch', enviaRascunho);
 router.put('/update/:id', atualizaRascunho)
 router.put('/file/:id', uploadConfig.single('imagem_postagem'), enviaImagem)
 router.delete('/', deletaPostagem);
+router.delete('/sketch', deletaRascunho);
 router.get('/sketch/:id', buscaRascunho);
 router.get('/on/:offset', listaPostagens)
 router.get('/single/:id', listaPostagem)
