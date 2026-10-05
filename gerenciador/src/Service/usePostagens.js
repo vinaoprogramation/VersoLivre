@@ -73,11 +73,11 @@ const usePostagens = create(
     },
 
     setIdPostagem: (id_postagem) => {
-      if(get().idPostagem === id_postagem){
+      if (get().idPostagem === id_postagem) {
         return true;
       }
 
-      if(get().idPostagem !== id_postagem){
+      if (get().idPostagem !== id_postagem) {
         set({ idPostagem: null }, false, "setIdPostagem")
       }
 
@@ -107,12 +107,12 @@ const usePostagens = create(
 
 
     setIdRascunho: (id_rascunho) => {
-      if(get().idRascunho === id_rascunho){
+      if (get().idRascunho === id_rascunho) {
         return true;
       }
 
-      if(get().idRascunho !== id_rascunho){
-        set({ idRascunho: null, rascunho:null }, false, "setIdRascunho")
+      if (get().idRascunho !== id_rascunho) {
+        set({ idRascunho: null, rascunho: null }, false, "setIdRascunho")
       }
 
       try {
@@ -221,9 +221,9 @@ const usePostagens = create(
 
       const id_rascunho = get().idRascunho;
 
-      if(id_rascunho){
+      if (id_rascunho) {
         id = id_rascunho;
-      } else{
+      } else {
         id = idRascunho;
       }
 
@@ -353,12 +353,48 @@ const usePostagens = create(
 
     },
 
-    anulaRascunho: async () => {
+    deletaRascunho: async () => {
 
-      set({rascunho: null, idRascunho: null}, false, "anulaRascunho");
+      try {
+
+        const id_rascunho = get().idRascunho;
+
+        if (!id_rascunho) {
+          console.error("Id não enviado")
+          return;
+        }
+
+        const response = await api.delete(`${BASE_URL}/sketch`, {
+          data: {id_postagem: id_rascunho}
+        });
+
+        if (response.status !== 200) {
+          return false;
+        }
+
+        set({ rascunho: null, idRascunho: null })
+        return true;
+
+
+      } catch (error) {
+        console.error("Erro ao deletar rascunho", error);
+        return false;
+      }
 
     },
-    
+
+    anulaRascunho: async () => {
+
+      set({ rascunho: null, idRascunho: null }, false, "anulaRascunho");
+
+    },
+
+    anulaRascunhos: async () => {
+
+      set({ rascunhos: [] }, false, "anulaRascunhos");
+
+    },
+
   })))
 
 export default usePostagens;

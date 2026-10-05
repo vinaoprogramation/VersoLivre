@@ -8,9 +8,12 @@ import usePostagens from "../../Service/usePostagens";
 import styles from './styles.module.css'
 
 export default function AdicionarPostagem() {
+  const navigate = useNavigate();
+
   const enviaRascunho = usePostagens((state) => state.enviaRascunho);
   const atualizaRascunho = usePostagens((state) => state.atualizaRascunho);
   const carregaRascunho = usePostagens((state) => state.carregaRascunho);
+  const deletaRascunho = usePostagens((state) => state.deletaRascunho);
   const rascunho = usePostagens((state) => state.rascunho);
   const idRascunho = usePostagens((state) => state.idRascunho);
 
@@ -35,6 +38,13 @@ export default function AdicionarPostagem() {
     return localStorage.getItem('titulo')
   });
 
+  useEffect(() => {
+    localStorage.setItem('titulo', titulo)
+  }, [titulo])
+
+  const [id, setId] = useState(() => {
+    return localStorage.getItem('id')
+  });
 
   useEffect(() => {
     localStorage.setItem('titulo', titulo)
@@ -52,11 +62,17 @@ export default function AdicionarPostagem() {
       setTitulo(rascunho.titulo_postagem)
       setGenero(rascunho.genero_postagem)
       setConteudo(rascunho.conteudo_postagem)
+      setId(rascunho.id_postagem)
       if(rascunho?.imagem_postagem?.data){
       const arquivoBytes = new Uint8Array(rascunho?.imagem_postagem?.data);
       const blob = new Blob([arquivoBytes], { type: rascunho?.imagem_postagem?.type });
       const objectUrl = URL.createObjectURL(blob);
       setImagePreview(objectUrl)
+      } else{
+        localStorage.setItem("titulo", "");
+        localStorage.setItem("genero", "");
+        localStorage.setItem("conteudo", "");
+        localStorage.setItem("id", "");
       }
     }
   }, [rascunho])
@@ -123,6 +139,19 @@ export default function AdicionarPostagem() {
 
   }
 
+  const deleta = async() => {
+
+    const deletaAcao = await deletaRascunho();
+
+    if(!deletaAcao){
+      return;
+    }
+
+    alert("Postagem deletada com sucesso");
+
+    navigate("../../HomeScreen")
+  }
+
   return <>
     <div className={styles.fundo}>
       <div className={styles.entrada}>
@@ -185,7 +214,11 @@ export default function AdicionarPostagem() {
 
 
             <div className={styles.containerBotoes}>
-              <button className={styles.botao}>
+              <button className={styles.botao}
+              onClick={() => {
+                deleta()
+              }}
+              >
                 Excluir Rascunho
               </button>
             </div>

@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import useAutenticacao from "../../Service/useAutenticacao";
 
 import styles from './styles.module.css'
+import usePostagens from "../../Service/usePostagens";
 
 export default function Login(){
   const login = useAutenticacao((state) => state.login);
   const autenticado = useAutenticacao((state) => state.autenticado);
+  const anulaRascunhos = usePostagens((state) => state.anulaRascunhos)
 
   const navigate = useNavigate();
 
@@ -20,6 +22,7 @@ export default function Login(){
     }
 
     if(login){
+      anulaRascunhos();
       const loga = await login(email, senha);
       if(loga){
         if(autenticado){
