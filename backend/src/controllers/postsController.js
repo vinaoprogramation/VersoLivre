@@ -366,6 +366,47 @@ async function buscaRascunho(req, res) {
 
 }
 
+
+async function listaRascunhosAdmin(req, res) {
+
+  try {
+
+    const token = await extractBearerToken(req.headers);
+
+    const role = await verificarToken(token).role_user;
+
+    if (role !== "admin") {
+      return res.status(403).json({
+        mensagem: "Acesso negado"
+      })
+    }
+
+    const resposta = await postsService.buscaRascunhos();
+
+    if (resposta && resposta.erro) {
+      return res.status(400).json({
+        mensagem: "Houve algum problema ao listar os rascunhos | " + resposta.erro
+      })
+      
+    }
+
+    return res.status(200).json({
+      rascunhos: resposta
+    })
+
+  } catch (error) {
+    console.error("Erro interno ao listar rascunhos");
+
+    return res.status(500).json({
+      mensagem: "Erro interno ao listar rascunhos"
+    })
+  }
+
+}
+
+
+
+
 async function listaRascunhos(req, res) {
 
   try {
@@ -511,6 +552,7 @@ module.exports = {
   deletaPostagem,
   deletaRascunho,
   buscaRascunho,
+  listaRascunhosAdmin,
   listaRascunhos,
   listaPostagens,
   listaPostagem,

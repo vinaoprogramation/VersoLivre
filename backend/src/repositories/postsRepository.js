@@ -301,6 +301,24 @@ async function listaRascunhos(id_autor_user) {
 
 }
 
+
+async function buscaRascunhos() {
+
+  try {
+
+    const listaRascunhosQuery = "SELECT id_postagem, titulo_postagem, genero_postagem, imagem_postagem, conteudo_postagem FROM postagens WHERE is_active = true AND status_escrita = 'rascunho'";
+
+    const [listaRascunhos] = await pool.execute(listaRascunhosQuery);
+
+    return listaRascunhos;
+
+  } catch (error) {
+    console.error("Erro ao buscar rascunhos", error);
+    return { erro: "Erro no banco de dados ao buscar rascunhos" }
+  }
+
+}
+
 async function buscaRascunho(id_postagem) {
 
   try {
@@ -334,5 +352,6 @@ module.exports = {
   listaPostagens,
   listaPostagem,
   listaRascunhos,
+  buscaRascunhos,
   contaOffSets,
 }

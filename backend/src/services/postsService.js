@@ -243,6 +243,18 @@ async function buscaRascunho(id_postagem, id_autor_user) {
 
 }
 
+async function buscaRascunhos() {
+
+  const buscaRascunhos = await postsRepository.buscaRascunhos();
+
+  if(buscaRascunhos.length === 0){
+    return {erro: "Nenhum rascunho encontrado"}
+  }
+
+  return buscaRascunhos;
+
+}
+
 async function listaRascunhos(id_autor_user) {
 
   const buscaRascunhos = await postsRepository.listaRascunhos(id_autor_user);
@@ -305,6 +317,7 @@ module.exports = {
   deletaPostagem,
   deletaRascunho,
   buscaRascunho,
+  buscaRascunhos,
   listaPostagens,
   listaPostagem,
   listaRascunhos,

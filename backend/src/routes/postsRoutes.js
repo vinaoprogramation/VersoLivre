@@ -16,6 +16,7 @@ const {
   listaPostagem,
   listaRascunhos,
   buscaRascunho,
+  listaRascunhosAdmin,
 } = require('../controllers/postsController');
 
 const router = express.Router();
@@ -34,7 +35,7 @@ router.get('/single/:id', listaPostagem)
 router.get('/sketches', listaRascunhos)
 
 router.use(adminAcess);
-
+router.get('/all/sketches', listaRascunhosAdmin)
 router.patch('/', decideStatusPostagem);
 
 
