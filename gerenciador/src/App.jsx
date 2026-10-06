@@ -11,6 +11,8 @@ import HomeScreen from './Telas/HomeScreen';
 import DetailScreen from './Telas/DetailsScreen';
 import AdicionarPostagem from './Telas/AdicionarPostagem'
 import Cadastro from './Telas/Cadastro'
+import AprovaPostagem from './Telas/AprovaPostagem'
+import VisualizacaoPostagem from './Telas/VisualizacaoPostagem'
 
 function App() {
 
@@ -30,6 +32,10 @@ function App() {
           <Route path="/DetailScreen/:idPostagem" element={<DetailScreen />} />
 
           <Route path="/Adicionar/Postagem" element={<AdicionarPostagem />} />
+
+          <Route path="/Rascunhos" element={<AprovaPostagem />} />
+
+          <Route path="/Visualizacao" element={<VisualizacaoPostagem />} />
 
         </Routes>
 

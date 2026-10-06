@@ -1,4 +1,4 @@
-const TOKEN_KEY = 'auth_token';
+export const TOKEN_KEY = 'auth_token';
 
 export async function storeToken(token){
 

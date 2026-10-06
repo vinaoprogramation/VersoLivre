@@ -70,17 +70,21 @@ export default function AdicionarPostagem() {
         setImagePreview(objectUrl)
       } else {
         if (localStorage.getItem(id)) {
-          const carregando = carregaRascunho(id)
-          setTitulo(rascunho.titulo_postagem)
-          setGenero(rascunho.genero_postagem)
-          setConteudo(rascunho.conteudo_postagem)
-          setId(rascunho.id_postagem)
-          if (rascunho?.imagem_postagem?.data) {
-            const arquivoBytes = new Uint8Array(rascunho?.imagem_postagem?.data);
-            const blob = new Blob([arquivoBytes], { type: rascunho?.imagem_postagem?.type });
-            const objectUrl = URL.createObjectURL(blob);
-            setImagePreview(objectUrl)
+          const carregando = await carregaRascunho(id)
+          if (carregando) {
+            setTitulo(rascunho.titulo_postagem)
+            setGenero(rascunho.genero_postagem)
+            setConteudo(rascunho.conteudo_postagem)
+            setId(rascunho.id_postagem)
+            if (rascunho?.imagem_postagem?.data) {
+              const arquivoBytes = new Uint8Array(rascunho?.imagem_postagem?.data);
+              const blob = new Blob([arquivoBytes], { type: rascunho?.imagem_postagem?.type });
+              const objectUrl = URL.createObjectURL(blob);
+              setImagePreview(objectUrl)
+            }
           }
+
+
 
         }
       }
@@ -90,7 +94,7 @@ export default function AdicionarPostagem() {
 
   useEffect(() => {
     inicia(rascunho)
-  }, [rascunho])
+  }, [])
 
   const handleKeyDown = (e) => {
     if (e.key === 'Tab') {

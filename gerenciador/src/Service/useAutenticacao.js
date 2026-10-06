@@ -1,14 +1,15 @@
 import { create } from 'zustand';
 
-import { storeToken, removeToken } from './authStorage'
+import { storeToken, getToken, removeToken } from './authStorage'
 
 import api from './api';
 
+import { TOKEN_KEY } from './authStorage';
 
 const BASE_URL = "http://localhost:3000/user";
 
 const useAutenticacao = create((set, get) => ({
-  autenticado: false,
+  autorizacao: null,
 
   login: async(email, senha) => {
     if(!email || !senha){
@@ -31,8 +32,21 @@ const useAutenticacao = create((set, get) => ({
 
       const setToken = await storeToken(answer.token);
 
+      const payload = await get().retornaToken()
+
+      if(payload.role_user == 'admin'){
+        set({autorizacao: 'admin'})
+        localStorage.setItem('at', 'admin')
+      }
+      else if(payload.role_user == 'user'){
+        set({autorizacao: 'user'})
+        localStorage.setItem('at', 'user')
+      } else{
+        return false;
+      }
+
       if(setToken){
-        set({autenticado: true}); 
+        console.log(get().autorizacao)
         return true;
       }
 
@@ -71,6 +85,28 @@ const useAutenticacao = create((set, get) => ({
       console.error("Erro no login", error);
       return false;
     }
+  },
+
+  retornaToken: async () => {
+
+    const token = await getToken();
+
+    if(!token){
+      return null;
+    }
+
+    const cleanToken = token.startsWith('Bearer ') ? token.slice(7) : token;
+
+    const base64Url = cleanToken.split('.')[1];
+
+    const base64 = base64Url.replace(/-/g, '+').replace(/-/g, '/');
+
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c){
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+
   }
 
 }))

@@ -14,6 +14,8 @@ const usePostagens = create(
     idRascunho: null,
     rascunhos: [],
     rascunho: null,
+    rascunhosAdmin: [],
+    
 
     carregaPostagens: async (offset) => {
 
@@ -327,7 +329,7 @@ const usePostagens = create(
           }
 
           if (imageAnswer.mensagem) {
-            const setRascunho = await get().carregaRascunho(id_postagem);
+            const setRascunho = await get().carregaRascunho(id_rascunho);
 
             if (!setRascunho) {
               console.error("Erro ao setar rascunho")
@@ -392,6 +394,35 @@ const usePostagens = create(
     anulaRascunhos: async () => {
 
       set({ rascunhos: [] }, false, "anulaRascunhos");
+
+    },
+
+    buscaRascunhos: async () => {
+      
+      try {
+
+        const response = await api.get(`${BASE_URL}/all/sketches`);
+
+        if(!response || response.status == 403){
+          return "Acesso negado";
+        }
+
+        const answer = await response.data;
+
+        if(!answer && !answer.rascunhos){
+          return "Erro ao processar resposta da requisição"
+        }
+
+        set({rascunhosAdmin: answer.rascunhos});
+
+        return true;
+
+        
+      } catch (error) {
+        console.error("Erro ao buscar os rascunhos", error)
+        if(error.status == 403)
+        return "Acesso negado";
+      }
 
     },
 

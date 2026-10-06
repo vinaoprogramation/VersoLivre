@@ -25,9 +25,7 @@ export default function Login(){
       anulaRascunhos();
       const loga = await login(email, senha);
       if(loga){
-        if(autenticado){
           navigate('/HomeScreen')
-        }
       }
     }
   }
