@@ -46,7 +46,6 @@ const useAutenticacao = create((set, get) => ({
       }
 
       if(setToken){
-        console.log(get().autorizacao)
         return true;
       }
 

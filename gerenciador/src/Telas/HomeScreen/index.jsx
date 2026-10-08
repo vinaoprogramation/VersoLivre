@@ -132,8 +132,7 @@ export default function HomeScreen() {
                     permissao == 'admin' ?
                       <>
                         <div className={styles.botaoAdicionar}
-                          onClick={() => {
-                            anulaRascunho();
+                          onClick={async() => {
                             navigate('/Rascunhos')
                           }}
                         >

@@ -17,6 +17,16 @@ export default function AdicionarPostagem() {
   const rascunho = usePostagens((state) => state.rascunho);
   const idRascunho = usePostagens((state) => state.idRascunho);
 
+
+  useEffect(() => {
+    setConteudo("");
+    setFile("");
+    setGenero("");
+    setId("");
+    setImagePreview("");
+    setTitulo("");
+  }, [])
+
   const [conteudo, setConteudo] = useState(() => {
     return localStorage.getItem('conteudo')
   });
