@@ -83,6 +83,24 @@ async function buscaSenha(email_user, id_user) {
 
 }
 
+async function buscaRole(id_user){
+
+    try {
+        
+        const buscaRoleQuery = "SELECT role_user FROM users WHERE id_user = ?"
+
+        const [buscaRole] = await pool.execute(buscaRoleQuery, [id_user]);
+
+        return buscaRole[0].role_user
+
+
+
+    } catch (error) {
+        console.error("Erro no banco de dados ao buscar role")
+    }
+
+}
+
 async function buscaParaAutenticacao(email_user) {
 
     try {
@@ -166,6 +184,39 @@ async function cadastraUsuario(nome_user, email_user, senha_user, role_user) {
 
 }
 
+async function listaAdmins(){
+
+    try {
+
+        const listaAdminsQuery = 'SELECT id_user, nome_user, email_user FROM users WHERE role_user = "admin"'
+
+        const [listaAdmins] = await pool.execute(listaAdminsQuery);
+
+        return listaAdmins;
+        
+    } catch (error) {
+        console.error("Erro no banco de dados ao listar administradores | ", error);
+    }
+
+}
+
+async function alteraRole(role, id_user){
+
+    try {
+
+        const alteraRoleQuery = "UPDATE users SET role_user = ? WHERE id_user = ?";
+
+        const [alteraRole] = await pool.execute(alteraRoleQuery, [role, id_user]);
+
+        return alteraRole.affectedRows;
+        
+    } catch (error) {
+        console.error("Erro no banco de dados ao alterar o role do usuário | ", error)
+    }
+
+
+}
+
 module.exports = {
     existeUsuario,
     postaUsuario,
@@ -174,4 +225,7 @@ module.exports = {
     buscaParaAutenticacao,
     buscaNomeUsuario,
     numeroDeUsuarios,
+    listaAdmins,
+    alteraRole,
+    buscaRole,
 };

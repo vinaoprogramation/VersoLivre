@@ -100,8 +100,46 @@ async function autenticaUser(email_user, senha_user) {
 
 }
 
+async function listaAdmins(id_user) {
+
+  const verificaId = await userRepository.buscaRole(id_user);
+
+  if (verificaId != "admin") {
+    return { erro: "Usuário não é administrador" }
+  }
+
+  const lista = await userRepository.listaAdmins();
+
+  if (lista.length === 0) {
+    return { erro: "Não á usuários cadastrados" }
+  }
+
+  return lista;
+
+}
+
+async function alteraRole(role, id_user, id_admin) {
+
+  const verificaId = await userRepository.buscaRole(id_admin);
+
+  if (verificaId != "admin") {
+    return { erro: "Usuário não é administrador" }
+  }
+
+  const altera = await userRepository.alteraRole(role, id_user)
+
+  if (altera === 0) {
+    return { erro: "O usuário já detém este role" }
+  }
+
+  return altera;
+
+}
+
 module.exports = {
   postUser,
   cadastraUser,
   autenticaUser,
+  listaAdmins,
+  alteraRole,
 }

@@ -543,7 +543,6 @@ async function listaPostagem(req, res) {
 }
 
 
-
 module.exports = {
   enviaPostagem,
   atualizaRascunho,
