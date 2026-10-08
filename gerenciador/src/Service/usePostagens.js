@@ -95,8 +95,6 @@ const usePostagens = create(
           return false;
         }
 
-        console.log("ID Agora: ", id)
-
         set({ idPostagem: id }, false, "setIdPostagem")
 
         return true;
@@ -129,8 +127,6 @@ const usePostagens = create(
           return false;
         }
 
-        console.log("Id foi aprovado")
-
         set({ idRascunho: id }, false, "setIdRascunho")
 
         return true;
@@ -158,8 +154,6 @@ const usePostagens = create(
         }
 
         set({ idRascunho: answer.id_postagem }, false, "setIdRascunho")
-        console.log("ID SETADO: ", get().idRascunho)
-
 
         if (file) {
           const id_postagem = get().idRascunho;
@@ -243,8 +237,6 @@ const usePostagens = create(
 
         const answer = await response.data;
 
-        console.log("Resposta da requisição: ", answer)
-
         if (!answer || !answer.rascunho) {
           console.error("Erro ao processar resposta da requisição(CARREGA RASCUNHO)")
           return false;
@@ -252,7 +244,6 @@ const usePostagens = create(
 
         if (answer.rascunho) {
           set({ rascunho: answer.rascunho }, false, "carregaRascunho");
-          console.log("Rascunho que foi setado: ", get().rascunho)
           return true;
         }
 
@@ -296,8 +287,6 @@ const usePostagens = create(
           console.error("Erro ao atualizar rascunho, id_rascunho inválido")
           return false;
         }
-
-        console.log(id_rascunho, titulo_postagem, genero_postagem, conteudo_postagem)
 
         const response = await api.put(`${BASE_URL}/update/${id_rascunho}`, {
           titulo_postagem: titulo_postagem,

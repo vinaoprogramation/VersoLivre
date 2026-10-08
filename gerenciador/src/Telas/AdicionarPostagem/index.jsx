@@ -19,12 +19,15 @@ export default function AdicionarPostagem() {
 
 
   useEffect(() => {
-    setConteudo("");
-    setFile("");
-    setGenero("");
-    setId("");
-    setImagePreview("");
-    setTitulo("");
+    if (!localStorage.getItem('id') && !idRascunho) {
+      setConteudo("");
+      setFile("");
+      setGenero("");
+      setId("");
+      setImagePreview("");
+      setTitulo("");
+    }
+
   }, [])
 
   const [conteudo, setConteudo] = useState(() => {
@@ -68,7 +71,6 @@ export default function AdicionarPostagem() {
 
   const inicia = async (rascunho) => {
     if (rascunho) {
-      console.log("Rascunho que chegou: ", rascunho)
       setTitulo(rascunho.titulo_postagem)
       setGenero(rascunho.genero_postagem)
       setConteudo(rascunho.conteudo_postagem)
@@ -103,8 +105,14 @@ export default function AdicionarPostagem() {
 
 
   useEffect(() => {
-    inicia(rascunho)
-  }, [])
+    if(titulo == "" && genero == "" && conteudo == ""){
+      inicia(rascunho)
+    }
+  }, [rascunho])
+
+  useEffect(() => {
+    console.log(rascunho)
+  }, [rascunho])
 
   const handleKeyDown = (e) => {
     if (e.key === 'Tab') {

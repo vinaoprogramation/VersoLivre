@@ -122,6 +122,7 @@ export default function HomeScreen() {
                   <div className={styles.botaoAdicionar}
                     onClick={() => {
                       anulaRascunho();
+                      localStorage.setItem('id', "")
                       navigate('/Adicionar/Postagem')
                     }}
                   >
