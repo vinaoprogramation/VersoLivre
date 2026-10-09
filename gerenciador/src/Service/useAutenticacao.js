@@ -10,6 +10,8 @@ const BASE_URL = "http://localhost:3000/user";
 
 const useAutenticacao = create((set, get) => ({
   autorizacao: null,
+  adminList: [],
+  dados: null,
 
   login: async(email, senha) => {
     if(!email || !senha){
@@ -46,8 +48,19 @@ const useAutenticacao = create((set, get) => ({
       }
 
       if(setToken){
-        return true;
+        const responseUser = await api.get(`${BASE_URL}/data`);
+
+        const answer = await responseUser.data;
+
+        if(answer && answer.dados_usuario){
+          set({dados: answer.dados_usuario});
+          return true;
+        }
+
+        return false;
       }
+
+      return false
 
       
     }catch(error){
@@ -106,7 +119,74 @@ const useAutenticacao = create((set, get) => ({
 
     return JSON.parse(jsonPayload);
 
-  }
+  },
+
+  listaAdmins: async () => {
+
+    try {
+
+      const response = await api.get(`${BASE_URL}/admins`);
+
+      const answer = await response.data;
+
+      if(answer && answer.admins){
+        set({adminList: answer.admins});
+        return true;      
+      }
+
+      return false;
+      
+    } catch (error) {
+      console.error("Erro ao listar administradores");
+      return false
+    }
+
+  },
+
+
+  alteraRole: async (role, id_user) => {
+
+    try {
+
+      const response = await api.patch(`${BASE_URL}/switch/${id_user}`,{
+        role: role,
+      });
+
+      if(response && response.status == 200){
+        return true;
+      }
+
+      return false;
+      
+    } catch (error) {
+      console.error("Erro ao listar administradores");
+      return false
+    }
+  },
+
+  cadastra: async (nome_user, email_user, senha_user, role_user) => {
+
+    try {
+      
+      const response = await api.post(`${BASE_URL}/post/manual`,{
+        nome_user: nome_user,
+        email_user: email_user,
+        senha_user: senha_user,
+        role_user: role_user,
+      })
+
+      if(response && response.status == 201){
+        return true;
+      }
+
+      return false;
+
+    } catch (error) {
+      console.error(error);
+      return false
+    }
+
+  } 
 
 }))
 

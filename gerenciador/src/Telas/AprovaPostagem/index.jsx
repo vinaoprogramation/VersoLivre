@@ -66,16 +66,27 @@ export default function AprovaPostagem() {
                           </p>
                         </div>
 
-                        <div className={styles.containerImagem}>
-                          {
-                            item.imagem_postagem ?
-                              <>
+
+                        {
+                          item.imagem_postagem && item.imagem_postagem != null ?
+                            <>
+                              <div className={styles.containerImagem}>
+
+
                                 <img src={imagem(item.imagem_postagem)} className={styles.imagemItem} />
-                              </>
-                              :
-                              null
-                          }
-                        </div>
+
+                              </div>
+                            </>
+                            :
+                            <>
+                              <div className={styles.imagemNula}>
+                                <p>Não há imagem salva</p>
+                              </div>
+
+                            </>
+
+                        }
+
 
                       </div>
                     </>)

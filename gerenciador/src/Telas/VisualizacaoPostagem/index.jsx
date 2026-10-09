@@ -9,36 +9,44 @@ import { ActivityIndicator } from "../../Reutilizaveis/ActivityIndicador";
 import usePostagens from "../../Service/usePostagens";
 
 export default function VisualizacaoPostagem() {
-  const buscaRascunho = usePostagens((state) => state.buscaRascunho);
+  const carregaRascunho = usePostagens((state) => state.carregaRascunho);
   const rascunho = usePostagens((state) => state.rascunho);
+  const idRascunho = usePostagens((state) => state.idRascunho);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const busca = async() => {
-      if(buscaRascunho){
-        const busca = await buscaRascunho();
-        if(busca){
-          localStorage.setItem('id_mostra', rascunho.id_postagem)
-        }
+    if(carregaRascunho){
+      if(idRascunho && idRascunho != null && idRascunho != localStorage.getItem('id_visualizar')){
+        carregaRascunho()
+      } else{
+        carregaRascunho(localStorage.getItem('id_visualizar'))
       }
     }
-
-    busca()
-  })
-
-  const [dadosRascunho, setDadosRascunhos] = useState(null)
+  }, [])
 
   useEffect(() => {
-    if(rascunho){
-      localStorage.setItem('rascunho', rascunho)
+    if(idRascunho != null){
+      localStorage.setItem('id_visualizar', idRascunho)
     }
-  }, [])
+  
+  }, [idRascunho])
+
+  
 
   return <>
     <div className={styles.fundo}>
       <div className={styles.entrada}>
-        
+        {
+          rascunho && rascunho != null?
+          <>
+            <div>
+              <h1>{rascunho.titulo_postagem}</h1>
+            </div>
+          </>
+          :
+          null
+        }
       </div>
     </div>
 

@@ -8,7 +8,6 @@ import usePostagens from "../../Service/usePostagens";
 
 export default function Login(){
   const login = useAutenticacao((state) => state.login);
-  const autenticado = useAutenticacao((state) => state.autenticado);
   const anulaRascunhos = usePostagens((state) => state.anulaRascunhos)
 
   const navigate = useNavigate();

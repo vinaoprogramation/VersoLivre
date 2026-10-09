@@ -88,4 +88,16 @@
   width: 50%;
   height: (fit-content - 2%);
   align-self: center;
+  overflow: hidden;
+}
+
+.conteudoPostagem{
+  max-height: 10vh;
+}
+
+.imagemNula{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
 }

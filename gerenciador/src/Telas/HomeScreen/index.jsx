@@ -7,6 +7,7 @@ import { ActivityIndicator } from "../../Reutilizaveis/ActivityIndicador";
 
 import iconeAdicionar from '../../assets/plus-square.png'
 import pasta from '../../assets/write.png'
+import people from '../../assets/people.png'
 
 import usePostagens from "../../Service/usePostagens";
 import useAutenticacao from "../../Service/useAutenticacao";
@@ -36,9 +37,9 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const buscaAt = () => {
-      if(autorizacao){
+      if (autorizacao) {
         setPermissao(autorizacao)
-      } else{
+      } else {
         setPermissao(localStorage.getItem('at'))
       }
     }
@@ -53,7 +54,7 @@ export default function HomeScreen() {
         {
           rascunhos && rascunhos.length > 0 ?
             <>
-              <h1 className={styles.tituloRascunhos}>Rascunhos</h1>
+              <h1 className={styles.tituloRascunhos}>Meus Rascunhos</h1>
 
               <div className={styles.rascunhosContainer}>
                 {rascunhos.map((item) => <>
@@ -133,11 +134,19 @@ export default function HomeScreen() {
                     permissao == 'admin' ?
                       <>
                         <div className={styles.botaoAdicionar}
-                          onClick={async() => {
+                          onClick={async () => {
                             navigate('/Rascunhos')
                           }}
                         >
                           <img src={pasta} className={styles.imagemBotaoAdicionar} />
+                        </div>
+
+                        <div className={styles.botaoAdicionar}
+                          onClick={async () => {
+                            navigate('/Usuarios')
+                          }}
+                        >
+                          <img src={people} className={styles.imagemBotaoAdicionar} />
                         </div>
                       </>
                       :

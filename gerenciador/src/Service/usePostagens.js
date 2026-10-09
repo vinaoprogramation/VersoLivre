@@ -213,17 +213,23 @@ const usePostagens = create(
 
     carregaRascunho: async (idRascunho) => {
 
+      console.log("Local"+idRascunho);
+
       let id;
 
       const id_rascunho = get().idRascunho;
 
-      if (id_rascunho) {
+      console.log("Zustand"+idRascunho);
+
+      if (id_rascunho && idRascunho != null) {
         id = id_rascunho;
       } else {
         id = idRascunho;
       }
 
-      if (!id || id <= 0 || !(Number.isInteger(id))) {
+      console.log("ID: "+id);
+
+      if (!id || id <= 0 || !(Number.isInteger(parseInt(id)))) {
         console.error("Erro ao carregar rascunho, id_rascunho inválido")
         return false;
       }

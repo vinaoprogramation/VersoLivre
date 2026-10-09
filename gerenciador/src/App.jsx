@@ -13,6 +13,7 @@ import AdicionarPostagem from './Telas/AdicionarPostagem'
 import Cadastro from './Telas/Cadastro'
 import AprovaPostagem from './Telas/AprovaPostagem'
 import VisualizacaoPostagem from './Telas/VisualizacaoPostagem'
+import Usuarios from './Telas/Usuarios';
 
 function App() {
 
@@ -36,6 +37,8 @@ function App() {
           <Route path="/Rascunhos" element={<AprovaPostagem />} />
 
           <Route path="/Visualizacao" element={<VisualizacaoPostagem />} />
+
+          <Route path="/Usuarios" element={<Usuarios />} />
 
         </Routes>
 
