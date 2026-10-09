@@ -217,6 +217,24 @@ async function alteraRole(role, id_user){
 
 }
 
+async function buscaDadosUsuario(id_user){
+
+    try {
+
+        const buscaDadosQuery = "SELECT nome_user, email_user, role_user FROM users WHERE id_user = ?";
+
+        const [buscaDados] = await pool.execute(buscaDadosQuery, [id_user]);
+
+        return buscaDados[0];
+        
+    } catch (error) {
+        console.error("Erro no banco de dados ao buscar dados do usuário", error)
+        return false;
+    }
+
+}
+
+
 module.exports = {
     existeUsuario,
     postaUsuario,
@@ -228,4 +246,5 @@ module.exports = {
     listaAdmins,
     alteraRole,
     buscaRole,
+    buscaDadosUsuario,
 };

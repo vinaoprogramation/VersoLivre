@@ -110,10 +110,6 @@ async function listaAdmins(id_user) {
 
   const lista = await userRepository.listaAdmins();
 
-  if (lista.length === 0) {
-    return { erro: "Não á usuários cadastrados" }
-  }
-
   return lista;
 
 }
@@ -136,10 +132,23 @@ async function alteraRole(role, id_user, id_admin) {
 
 }
 
+async function buscaDadosUsuario(id_user) {
+
+  const buscaDadosUsuario = await userRepository.buscaDadosUsuario(id_user);
+
+  if(buscaDadosUsuario == null){
+    return {erro: "Usuário não existe"}
+  }
+
+  return buscaDadosUsuario;
+  
+}
+
 module.exports = {
   postUser,
   cadastraUser,
   autenticaUser,
   listaAdmins,
   alteraRole,
+  buscaDadosUsuario,
 }

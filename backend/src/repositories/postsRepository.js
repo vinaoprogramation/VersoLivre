@@ -323,7 +323,7 @@ async function buscaRascunho(id_postagem) {
 
   try {
 
-    const buscaRascunhoQuery = "SELECT titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, imagem_postagem from postagens WHERE id_postagem = ?";
+    const buscaRascunhoQuery = "SELECT id_postagem, titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, imagem_postagem from postagens WHERE id_postagem = ?";
 
     const [buscaRascunho] = await pool.execute(buscaRascunhoQuery, [id_postagem]);
 

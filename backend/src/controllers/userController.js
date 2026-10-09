@@ -1,3 +1,4 @@
+const { adminAcess } = require('../middlewares/adminMiddlewares');
 const userService = require('../services/userService');
 
 const {
@@ -51,7 +52,7 @@ async function cadastraUser(req, res) {
 
         const { nome_user, email_user, senha_user, role_user } = req.body;
 
-        if (!nome_user || !email_user || !senha_user || !role_user) {
+        if (!nome_user || !email_user || !senha_user || !role_user || role_user != "user" && role_user != "admin"){
             return res.status(400).json({
                 mensagem: 'Bad Request ao postar usuário'
             })
@@ -142,7 +143,7 @@ async function listaAdmins(req, res) {
             })
         }
 
-        const resposta = await userService.listaAdmins(payload.id_user);
+        const resposta = await userService.listaAdmins(payload.id_user)
 
         if (resposta && resposta.erro) {
             return res.status(400).json({
@@ -171,7 +172,7 @@ async function alteraRole(req, res) {
 
         const token = extractBearerToken(req.headers)
 
-        if(!token){
+        if (!token) {
             return res.status(403).json({
                 mensagem: "Token não enviado"
             })
@@ -179,7 +180,7 @@ async function alteraRole(req, res) {
 
         const id_admin = await verificarToken(token).id_user;
 
-        if(!id_admin){
+        if (!id_admin) {
             return res.status(404).json({
                 mensagem: "Token inválido"
             })
@@ -189,13 +190,13 @@ async function alteraRole(req, res) {
 
         const id_user = req.params.id;
 
-        if(!role || !id_user){
+        if (!role || !id_user) {
             return res.status(404).json({
                 mensagem: "Bad request ao alterar role"
             })
         }
 
-        if(id_admin == id_user){
+        if (id_admin == id_user) {
             return res.status(404).json({
                 mensagem: "Não se pode alterar o próprio status"
             })
@@ -203,16 +204,16 @@ async function alteraRole(req, res) {
 
         const resposta = await userService.alteraRole(role, id_user, id_admin);
 
-         if (resposta && resposta.erro) {
+        if (resposta && resposta.erro) {
             return res.status(400).json({
-                mensagem: `Houve algum problema ao listar | +${resposta.erro}`
+                mensagem: `Houve algum problema ao listar`
             })
         }
 
         return res.status(200).json({
             mensagem: "Role alterado com sucesso"
         })
-        
+
     } catch (error) {
         console.error("Erro interno ao alterar o role do usuário");
 
@@ -223,10 +224,53 @@ async function alteraRole(req, res) {
 
 }
 
+async function buscaDadosUsuario(req, res) {
+
+    try {
+
+        const token = extractBearerToken(req.headers);
+
+        if (!token) {
+            return res.status(403).json({
+                mensagem: "Token não informado"
+            })
+        }
+
+        const id_user = await verificarToken(token).id_user;
+
+        if (!id_user) {
+            return res.status(403).json({
+                mensagem: "Token inválido ou expirado"
+            })
+        }
+
+        const resposta = await userService.buscaDadosUsuario(id_user);
+
+        if (resposta && resposta.erro) {
+            return res.status(400).json({
+                mensagem: `Houve algum problema ao buscar dados`
+            })
+        }
+
+        return res.status(200).json({
+            dados_usuario: resposta
+        })
+
+    } catch (error) {
+        console.error("Erro interno ao buscar dados do usuário", error);
+
+        return res.status(500).json({
+            mensagem: "Erro interno ao buscar dados do usuário"
+        })
+    }
+
+}
+
 module.exports = {
     postUser,
     autenticaUser,
     cadastraUser,
     listaAdmins,
-    alteraRole
+    alteraRole,
+    buscaDadosUsuario,
 }
