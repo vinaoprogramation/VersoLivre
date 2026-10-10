@@ -19,6 +19,7 @@ export default function HomeScreen() {
   const carregaRascunhos = usePostagens((state) => state.carregaRascunhos);
   const setIdPostagem = usePostagens((state) => state.setIdPostagem);
   const setIdRascunho = usePostagens((state) => state.setIdRascunho);
+  const idRascunho = usePostagens((state) => state.idRascunho);
   const anulaRascunho = usePostagens((state) => state.anulaRascunho);
   const autorizacao = useAutenticacao((state) => state.autorizacao);
 
@@ -121,10 +122,14 @@ export default function HomeScreen() {
 
                 <div className={styles.containerBotoes}>
                   <div className={styles.botaoAdicionar}
-                    onClick={() => {
-                      anulaRascunho();
+                    onClick={async () => {
+                      const anula = await anulaRascunho();
                       localStorage.setItem('id', "")
-                      navigate('/Adicionar/Postagem')
+                      if (anula) {
+                        navigate('/Adicionar/Postagem')
+                      }
+
+
                     }}
                   >
                     <img src={iconeAdicionar} className={styles.imagemBotaoAdicionar} />

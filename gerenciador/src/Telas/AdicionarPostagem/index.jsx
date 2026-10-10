@@ -18,17 +18,6 @@ export default function AdicionarPostagem() {
   const idRascunho = usePostagens((state) => state.idRascunho);
 
 
-  useEffect(() => {
-    if (!localStorage.getItem('id') && !idRascunho) {
-      setConteudo("");
-      setFile("");
-      setGenero("");
-      setId("");
-      setImagePreview("");
-      setTitulo("");
-    }
-
-  }, [])
 
   const [conteudo, setConteudo] = useState(() => {
     return localStorage.getItem('conteudo')
@@ -62,57 +51,6 @@ export default function AdicionarPostagem() {
   useEffect(() => {
     localStorage.setItem('id', id)
   }, [id])
-
-  useEffect(() => {
-    if (carregaRascunho && idRascunho) {
-      carregaRascunho(idRascunho);
-    }
-  }, [carregaRascunho, idRascunho])
-
-  const inicia = async (rascunho) => {
-    if (rascunho) {
-      setTitulo(rascunho.titulo_postagem)
-      setGenero(rascunho.genero_postagem)
-      setConteudo(rascunho.conteudo_postagem)
-      setId(rascunho.id_postagem)
-      if (rascunho?.imagem_postagem?.data) {
-        const arquivoBytes = new Uint8Array(rascunho?.imagem_postagem?.data);
-        const blob = new Blob([arquivoBytes], { type: rascunho?.imagem_postagem?.type });
-        const objectUrl = URL.createObjectURL(blob);
-        setImagePreview(objectUrl)
-      } else {
-        if (localStorage.getItem(id)) {
-          const carregando = await carregaRascunho(id)
-          if (carregando) {
-            setTitulo(rascunho.titulo_postagem)
-            setGenero(rascunho.genero_postagem)
-            setConteudo(rascunho.conteudo_postagem)
-            setId(rascunho.id_postagem)
-            if (rascunho?.imagem_postagem?.data) {
-              const arquivoBytes = new Uint8Array(rascunho?.imagem_postagem?.data);
-              const blob = new Blob([arquivoBytes], { type: rascunho?.imagem_postagem?.type });
-              const objectUrl = URL.createObjectURL(blob);
-              setImagePreview(objectUrl)
-            }
-          }
-
-
-
-        }
-      }
-    }
-  }
-
-
-  useEffect(() => {
-    if(titulo == "" && genero == "" && conteudo == ""){
-      inicia(rascunho)
-    }
-  }, [rascunho])
-
-  useEffect(() => {
-    console.log(rascunho)
-  }, [rascunho])
 
   const handleKeyDown = (e) => {
     if (e.key === 'Tab') {
@@ -160,8 +98,6 @@ export default function AdicionarPostagem() {
     if (envia) {
       alert("Rascunho salvo com sucesso")
     }
-
-    console.log(titulo, genero, conteudo, file)
   }
 
   const handleAtualizaRascunho = async (titulo, genero, conteudo, file) => {
@@ -171,8 +107,6 @@ export default function AdicionarPostagem() {
     if (atualiza) {
       alert("Rascunho atualizado com sucesso")
     }
-
-    console.log(titulo, genero, conteudo, file)
 
   }
 
@@ -188,6 +122,72 @@ export default function AdicionarPostagem() {
 
     navigate("../../HomeScreen")
   }
+
+
+  const handleImagemRascunho = (file) => {
+    if (file && file.length > 0) {
+
+      const uint8Array = new Uint8Array(file);
+
+      const blob = new Blob([uint8Array], { type: 'image/png' });
+      if (blob) {
+        const objectUrl = URL.createObjectURL(blob);
+        setImagePreview(objectUrl)
+        setFile(blob)
+      }
+    }
+  }
+
+  useEffect(() => {
+
+    setConteudo(rascunho?.conteudo_postagem);
+    setTitulo(rascunho?.titulo_postagem);
+    setGenero(rascunho?.genero_postagem);
+    setId(rascunho?.id_postagem);
+    handleImagemRascunho(rascunho?.imagem_postagem?.data)
+
+  }, [rascunho])
+
+  useEffect(() => {
+    const setagem = async () => {
+      if (idRascunho) {
+        setConteudo("");
+        setTitulo("");
+        setGenero("");
+        setImagePreview(null);
+        setFile("");
+        setId("")
+
+        carregaRascunho();
+
+        return;
+
+
+      } else if (localStorage.getItem(('id')) != null || localStorage.getItem(('id')) != "") {
+        setConteudo("");
+        setTitulo("");
+        setGenero("");
+        setImagePreview(null);
+        setFile("");
+        setId("")
+
+        carregaRascunho(localStorage.getItem('id'));
+
+        return;
+
+      } else {
+        setConteudo("");
+        setTitulo("");
+        setGenero("");
+        setImagePreview(null);
+        setFile("");
+        setId("")
+      }
+    }
+
+    setagem();
+
+  }, []);
 
   return <>
     <div className={styles.fundo}>
@@ -262,15 +262,18 @@ export default function AdicionarPostagem() {
           </div>
 
 
-          {imagePreview && (
-            <div style={{ marginTop: '10px' }}>
-              <img
-                src={imagePreview}
-                alt="Preview"
-                style={{ maxWidth: '300px', borderRadius: '8px' }}
-              />
-            </div>
-          )}
+          {
+            imagePreview ?
+              <div style={{ marginTop: '10px' }}>
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  style={{ maxWidth: '300px', borderRadius: '8px' }}
+                />
+              </div>
+              :
+              null
+          }
 
 
 

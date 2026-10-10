@@ -15,7 +15,7 @@ const usePostagens = create(
     rascunhos: [],
     rascunho: null,
     rascunhosAdmin: [],
-    
+
 
     carregaPostagens: async (offset) => {
 
@@ -212,34 +212,21 @@ const usePostagens = create(
 
 
     carregaRascunho: async (idRascunho) => {
-
-      console.log("Local"+idRascunho);
-
-      let id;
-
-      const id_rascunho = get().idRascunho;
-
-      console.log("Zustand"+idRascunho);
-
-      if (id_rascunho && idRascunho != null) {
-        id = id_rascunho;
-      } else {
-        id = idRascunho;
-      }
-
-      console.log("ID: "+id);
-
-      if (!id || id <= 0 || !(Number.isInteger(parseInt(id)))) {
-        console.error("Erro ao carregar rascunho, id_rascunho inválido")
-        return false;
-      }
-
-      set({ idRascunho: id }, false, "setIdRascunho")
       try {
+
+        let id;
 
         const id_rascunho = get().idRascunho;
 
-        const response = await api.get(`${BASE_URL}/sketch/${id_rascunho}`)
+        if (idRascunho) {
+          id = idRascunho;
+        } else {
+          id = id_rascunho;
+        }
+
+        set({ idRascunho: id }, false, "setIdRascunho")
+
+        const response = await api.get(`${BASE_URL}/sketch/${id}`)
 
         const answer = await response.data;
 
@@ -285,14 +272,9 @@ const usePostagens = create(
 
     atualizaRascunho: async (titulo_postagem, genero_postagem, conteudo_postagem, file) => {
 
-      const id_rascunho = get().idRascunho;
-
       try {
 
-        if (!id_rascunho || id_rascunho <= 0 || !(Number.isInteger(id_rascunho))) {
-          console.error("Erro ao atualizar rascunho, id_rascunho inválido")
-          return false;
-        }
+        const id_rascunho = get().idRascunho;
 
         const response = await api.put(`${BASE_URL}/update/${id_rascunho}`, {
           titulo_postagem: titulo_postagem,
@@ -341,7 +323,8 @@ const usePostagens = create(
           console.error("Erro ao setar rascunho")
           return false;
         }
-        return get().carregaRascunho();
+
+        return true;
 
       } catch (error) {
         console.error("Erro ao atualizar rascunho", error);
@@ -384,6 +367,8 @@ const usePostagens = create(
 
       set({ rascunho: null, idRascunho: null }, false, "anulaRascunho");
 
+      return true;
+
     },
 
     anulaRascunhos: async () => {
@@ -393,30 +378,30 @@ const usePostagens = create(
     },
 
     buscaRascunhos: async () => {
-      
+
       try {
 
         const response = await api.get(`${BASE_URL}/all/sketches`);
 
-        if(!response || response.status == 403){
+        if (!response || response.status == 403) {
           return "Acesso negado";
         }
 
         const answer = await response.data;
 
-        if(!answer && !answer.rascunhos){
+        if (!answer && !answer.rascunhos) {
           return "Erro ao processar resposta da requisição"
         }
 
-        set({rascunhosAdmin: answer.rascunhos});
+        set({ rascunhosAdmin: answer.rascunhos });
 
         return true;
 
-        
+
       } catch (error) {
         console.error("Erro ao buscar os rascunhos", error)
-        if(error.status == 403)
-        return "Acesso negado";
+        if (error.status == 403)
+          return "Acesso negado";
       }
 
     },
