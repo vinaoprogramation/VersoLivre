@@ -1,5 +1,5 @@
 const postsRepository = require("../repositories/postsRepository");
-const userRepository = require("../repositories/userRepository")
+const userRepository = require("../repositories/userRepository");
 
 const {
   gerarToken,
@@ -225,11 +225,11 @@ async function deletaRascunho(id_postagem, id_autor_user) {
 
 }
 
-async function buscaRascunho(id_postagem, id_autor_user) {
+async function buscaRascunho(id_postagem, id_autor_user, role) {
 
   const verificaAutor = await postsRepository.buscaCriadorPostagem(id_postagem);
 
-  if (verificaAutor !== id_autor_user) {
+  if (verificaAutor !== id_autor_user && role != "admin") {
     return { erro: "O usuário não é o autor desta postagem" }
   }
 
@@ -243,9 +243,9 @@ async function buscaRascunho(id_postagem, id_autor_user) {
 
 }
 
-async function buscaRascunhos() {
+async function buscaRascunhosAdmin() {
 
-  const buscaRascunhos = await postsRepository.buscaRascunhos();
+  const buscaRascunhos = await postsRepository.buscaRascunhosAdmin();
 
   if(buscaRascunhos.length === 0){
     return {erro: "Nenhum rascunho encontrado"}
@@ -308,6 +308,24 @@ async function listaPostagem(id_postagem) {
 
 }
 
+async function enviaParaAprovacao(id_postagem, id_usuario){
+
+  const verificaId = await postsRepository.buscaCriadorPostagem(id_postagem);
+
+  if(verificaId !== id_usuario){
+    return {erro: "Usuário não é o autor do rascunho"}
+  }
+
+  const envio = await postsRepository.enviaParaAprovacao(id_postagem);
+
+  if(envio === 0){
+    return {erro: "Erro ao enviar rascunho para aprovação"}
+  }
+
+  return envio;
+
+}
+
 module.exports = {
   enviaRascunho,
   atualizaRascunho,
@@ -317,8 +335,9 @@ module.exports = {
   deletaPostagem,
   deletaRascunho,
   buscaRascunho,
-  buscaRascunhos,
+  buscaRascunhosAdmin,
   listaPostagens,
   listaPostagem,
   listaRascunhos,
+  enviaParaAprovacao,
 }

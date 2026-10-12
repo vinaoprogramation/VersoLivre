@@ -82,9 +82,23 @@ async function decideStatusPostagem(status_postagem, id_responsavel_postagem, id
 
   try {
 
-    const enviaStatusQuery = "UPDATE postagens SET status_postagem = ?, id_responsavel_postagem = ?, mensagem = ? WHERE id_postagem = ?";
+    let query;
 
-    const [enviaStatus] = await pool.execute(enviaStatusQuery, [status_postagem, id_responsavel_postagem, mensagem, id_postagem]);
+    if(status_postagem == "aprovada"){
+
+      query = "UPDATE postagens SET status_postagem = ?, id_responsavel_postagem = ?, mensagem = ? WHERE id_postagem = ?";
+
+    } else if(status_postagem == "recusada"){
+
+      query = "UPDATE postagens SET status_postagem = ?, id_responsavel_postagem = ?, mensagem = ?, status_escrita = 'pendente' WHERE id_postagem = ?";
+
+    } else{
+
+      query = null;
+
+    }
+
+    const [enviaStatus] = await pool.execute(query, [status_postagem, id_responsavel_postagem, mensagem, id_postagem]);
 
     return enviaStatus.affectedRows;
 
@@ -302,11 +316,11 @@ async function listaRascunhos(id_autor_user) {
 }
 
 
-async function buscaRascunhos() {
+async function buscaRascunhosAdmin() {
 
   try {
 
-    const listaRascunhosQuery = "SELECT id_postagem, titulo_postagem, genero_postagem, imagem_postagem, conteudo_postagem FROM postagens WHERE is_active = true AND status_escrita = 'rascunho'";
+    const listaRascunhosQuery = "SELECT id_postagem, titulo_postagem, genero_postagem, imagem_postagem, conteudo_postagem FROM postagens WHERE is_active = true AND status_escrita = 'concluida' AND status_postagem = 'pendente'";
 
     const [listaRascunhos] = await pool.execute(listaRascunhosQuery);
 
@@ -336,6 +350,23 @@ async function buscaRascunho(id_postagem) {
 
 }
 
+async function enviaParaAprovacao(id_postagem){
+  
+  try {
+
+    const enviaQuery = "UPDATE postagens SET status_escrita = 'concluida' WHERE id_postagem = ?";
+
+    const [envia] = await pool.execute(enviaQuery, [id_postagem]);
+
+    return envia.affectedRows;
+    
+  } catch (error) {
+    console.error("Erro no banco de dados ao enviar postagem para aprovação");
+    return {erro: "Erro no banco de dados ao enviar postagem para aprovação"}
+  }
+
+}
+
 module.exports = {
   enviarRascunho,
   enviaPostagem,
@@ -352,6 +383,7 @@ module.exports = {
   listaPostagens,
   listaPostagem,
   listaRascunhos,
-  buscaRascunhos,
+  buscaRascunhosAdmin,
   contaOffSets,
+  enviaParaAprovacao,
 }

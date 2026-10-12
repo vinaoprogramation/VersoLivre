@@ -187,7 +187,13 @@ async function decideStatusPostagem(req, res) {
 
   try {
 
-    const { status_postagem, id_responsavel_postagem, id_postagem, mensagem } = req.body;
+    const { status_postagem, mensagem } = req.body;
+
+    const id_postagem = req.params.id;
+
+    const token = await extractBearerToken(req.headers);
+
+    const id_responsavel_postagem = await verificarToken(token).id_user;
 
     if (!status_postagem || !id_responsavel_postagem || !id_postagem) {
       return res.status(404).json({
@@ -336,7 +342,9 @@ async function buscaRascunho(req, res) {
 
     const token = await extractBearerToken(req.headers);
 
-    const id_autor_user = await verificarToken(token).id_user;
+    const payload = await verificarToken(token)
+
+    const id_autor_user = payload.id_user;    
 
     if (!id_postagem || !id_autor_user) {
       return res.status(404).json({
@@ -344,7 +352,15 @@ async function buscaRascunho(req, res) {
       })
     }
 
-    const resposta = await postsService.buscaRascunho(id_postagem, id_autor_user);
+    const role = payload.role_user;
+
+    if (!role) {
+      return res.status(404).json({
+        mensagem: "Bad request ao buscar rascunho"
+      })
+    }
+
+    const resposta = await postsService.buscaRascunho(id_postagem, id_autor_user, role);
 
     if (resposta && resposta.erro) {
       return res.status(400).json({
@@ -381,7 +397,7 @@ async function listaRascunhosAdmin(req, res) {
       })
     }
 
-    const resposta = await postsService.buscaRascunhos();
+    const resposta = await postsService.buscaRascunhosAdmin();
 
     if (resposta && resposta.erro) {
       return res.status(400).json({
@@ -543,6 +559,44 @@ async function listaPostagem(req, res) {
 }
 
 
+async function enviaParaAprovacao(req, res) {
+
+  try {
+    
+    const id_postagem = req.params.id;
+
+    const token = await extractBearerToken(req.headers);
+
+    const id_autor = await verificarToken(token).id_user;
+
+    if(!id_postagem || !id_autor){
+      return res.status(404).json({
+        mensagem: "Bad request ao enviar rascunho para aprovação"
+      })
+    }
+
+    const resposta = await postsService.enviaParaAprovacao(id_postagem, id_autor);
+
+    if (resposta && resposta.erro) {
+      return res.status(400).json({
+        mensagem: "Houve algum problema ao enviar o rascunho"
+      })
+    }
+
+    return res.status(200).json({
+      mensagem: "Rascunho enviado para a aprovação com sucesso"
+    })
+
+  } catch (error) {
+    console.error("Erro interno ao enviar rascunho para aprovação");
+
+    return res.status(500).json({
+      mensagem: "Erro interno ao enviar rascunho para aprovação",
+    })
+  }
+
+}
+
 module.exports = {
   enviaPostagem,
   atualizaRascunho,
@@ -556,4 +610,5 @@ module.exports = {
   listaPostagens,
   listaPostagem,
   enviaImagem,
+  enviaParaAprovacao,
 }

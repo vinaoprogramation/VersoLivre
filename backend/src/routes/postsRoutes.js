@@ -17,6 +17,7 @@ const {
   listaRascunhos,
   buscaRascunho,
   listaRascunhosAdmin,
+  enviaParaAprovacao
 } = require('../controllers/postsController');
 
 const router = express.Router();
@@ -33,10 +34,11 @@ router.get('/sketch/:id', buscaRascunho);
 router.get('/on/:offset', listaPostagens)
 router.get('/single/:id', listaPostagem)
 router.get('/sketches', listaRascunhos)
+router.patch('/send/sketch/:id', enviaParaAprovacao)
 
 router.use(adminAcess);
 router.get('/all/sketches', listaRascunhosAdmin)
-router.patch('/', decideStatusPostagem);
+router.patch('/:id', decideStatusPostagem);
 
 
 module.exports = router;
