@@ -406,6 +406,32 @@ const usePostagens = create(
 
     },
 
+    decideStatusPostagem: async (id_postagem, decisao, mensagem) => {
+    
+      try {
+
+        console.log(id_postagem, decisao, mensagem)
+
+        const response = await api.patch(`${BASE_URL}/${id_postagem}`,{
+          status_postagem: decisao,
+          mensagem: mensagem,
+        })
+
+        if(response.status !== 200){
+          console.error("Erro ao enviar status da postagem")
+          return false;
+        }
+
+        return true;
+
+      } catch (error) {
+        console.error("Erro ao decidir status da psotagem", error);
+
+        return false;
+      }
+
+    }
+
   })))
 
 export default usePostagens;
