@@ -471,8 +471,6 @@ async function listaPostagens(req, res) {
       numeroOffset = parseInt(offset);
     }
 
-
-
     if (numeroOffset <= 0 || !(Number.isInteger(numeroOffset))) {
       return res.status(404).json({
         mensagem: "Bad request ao listar as postagens"

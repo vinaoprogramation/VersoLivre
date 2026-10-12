@@ -100,7 +100,15 @@ async function decideStatusPostagem(status_postagem, id_responsavel_postagem, id
 
     const [enviaStatus] = await pool.execute(query, [status_postagem, id_responsavel_postagem, mensagem, id_postagem]);
 
-    return enviaStatus.affectedRows;
+    if(enviaStatus.affectedRows == 0){
+      return {erro: "Erro no banco de dados(0 linhas afetadas)"}
+    }
+
+    const enviaLogQuery = "INSERT INTO logs_administrativos (id_user, acao, data_acao) VALUES (?, ?, ?)";
+
+    const enviaLog = await pool.execute(enviaLogQuery, [id_responsavel_postagem, "Repasse da postagem", new Date()]);
+
+    return enviaLog.affectedRows;
 
   } catch (error) {
     console.error("Erro ao atualizar status da postagem", error);
@@ -250,7 +258,7 @@ async function listaPostagens(offset) {
 
   try {
 
-    const listaPostagensQuery = 'SELECT * FROM postagens WHERE is_active = true AND status_postagem = "aprovada" ORDER BY id_postagem ASC LIMIT 10 OFFSET ? ';
+    const listaPostagensQuery = 'SELECT * FROM postagens WHERE is_active = true AND status_postagem = "aprovada" AND status_escrita = "concluida" ORDER BY id_postagem ASC LIMIT 10 OFFSET ? ';
 
     const [listaPostagens] = await pool.execute(listaPostagensQuery, [(offset - 1) * 10])
 
@@ -320,7 +328,7 @@ async function buscaRascunhosAdmin() {
 
   try {
 
-    const listaRascunhosQuery = "SELECT id_postagem, titulo_postagem, genero_postagem, imagem_postagem, conteudo_postagem FROM postagens WHERE is_active = true AND status_escrita = 'concluida' AND status_postagem = 'pendente'";
+    const listaRascunhosQuery = 'SELECT id_postagem, titulo_postagem, genero_postagem, imagem_postagem, conteudo_postagem FROM postagens WHERE is_active = true AND status_escrita = "concluida" AND status_postagem = "pendente"';
 
     const [listaRascunhos] = await pool.execute(listaRascunhosQuery);
 
@@ -354,7 +362,7 @@ async function enviaParaAprovacao(id_postagem){
   
   try {
 
-    const enviaQuery = "UPDATE postagens SET status_escrita = 'concluida' WHERE id_postagem = ?";
+    const enviaQuery = 'UPDATE postagens SET status_escrita = "concluida" WHERE id_postagem = ?';
 
     const [envia] = await pool.execute(enviaQuery, [id_postagem]);
 

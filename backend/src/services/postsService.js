@@ -247,10 +247,6 @@ async function buscaRascunhosAdmin() {
 
   const buscaRascunhos = await postsRepository.buscaRascunhosAdmin();
 
-  if(buscaRascunhos.length === 0){
-    return {erro: "Nenhum rascunho encontrado"}
-  }
-
   return buscaRascunhos;
 
 }
@@ -258,10 +254,6 @@ async function buscaRascunhosAdmin() {
 async function listaRascunhos(id_autor_user) {
 
   const buscaRascunhos = await postsRepository.listaRascunhos(id_autor_user);
-
-  if(buscaRascunhos.length === 0){
-    return {erro: "Nenhum rascunho encontrado"}
-  }
 
   return buscaRascunhos;
 
