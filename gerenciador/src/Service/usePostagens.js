@@ -26,7 +26,7 @@ const usePostagens = create(
       }
 
       try {
-        const response = await api.get(`${BASE_URL}/${numero}`)
+        const response = await api.get(`${BASE_URL}/on/${numero}`)
 
         const answer = await response.data;
 
@@ -43,7 +43,7 @@ const usePostagens = create(
 
 
       } catch (error) {
-        console.error("Erro ao carregar as postagens");
+        console.error("Erro ao carregar as postagens", error);
         return;
       }
     },
@@ -387,15 +387,19 @@ const usePostagens = create(
           return "Acesso negado";
         }
 
-        const answer = await response.data;
-
-        if (!answer && !answer.rascunhos) {
-          return "Erro ao processar resposta da requisição"
+        if(response.status !== 200){
+          throw new error;
         }
 
-        set({ rascunhosAdmin: answer.rascunhos });
+        const answer = await response.data;
+
+        if (answer && answer.rascunhos.length !== 0) {
+          set({ rascunhosAdmin: answer.rascunhos });
+        }
 
         return true;
+
+        
 
 
       } catch (error) {
@@ -427,6 +431,27 @@ const usePostagens = create(
       } catch (error) {
         console.error("Erro ao decidir status da psotagem", error);
 
+        return false;
+      }
+
+    },
+
+    enviaParaAprovacao: async(id_postagem) => {
+
+      console.log(id_postagem)
+
+      try {
+        
+        const response = await api.patch(`${BASE_URL}/send/sketch/${id_postagem}`);
+
+        if(response.status !== 200){
+          return false;
+        }
+
+        return true;
+
+      } catch (error) {
+        console.error("Erro ao enviar rascunho para aprovação", error);
         return false;
       }
 

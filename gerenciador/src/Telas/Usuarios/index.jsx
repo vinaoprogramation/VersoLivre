@@ -36,15 +36,15 @@ export default function Usuarios() {
     listaAdmins();
   }, [])
 
-  const altera = async(role, id_user) =>{
-    if(!role || !id_user){
+  const altera = async (role, id_user) => {
+    if (!role || !id_user) {
       alert("Faltam parâmetros")
       return;
     }
 
     const alterando = await alteraRole(role, id_user);
 
-    if(alterando){
+    if (alterando) {
       alert("Administrador foi rebaixado a usuário");
       listaAdmins()
       return;
@@ -54,19 +54,21 @@ export default function Usuarios() {
     return;
   }
 
+  const data = JSON.parse(localStorage.getItem('dados'))
+
   return <>
     <div className={styles.fundo}>
       <div className={styles.entrada}>
         <div className={styles.usersContainer}>
 
           {
-            adminList && adminList.length !== 0 ?
+            data && adminList && adminList.length !== 0 ?
               <>
 
                 {
                   adminList.map((item) => <>
                     {
-                      item.email_user != dados.email_user ?
+                      item.email_user != data.email_user ?
                         <div className={styles.userContainer}
                           key={item.id_user}
                         >
@@ -83,9 +85,9 @@ export default function Usuarios() {
 
                           <div className={styles.containerBotao}>
                             <button className={styles.botao}
-                            onClick={() => {
-                              altera("user", item.id_user)
-                            }}
+                              onClick={() => {
+                                altera("user", item.id_user)
+                              }}
                             >
                               <p className={styles.textoBotao}>
                                 Rebaixar a Usuário
@@ -103,6 +105,12 @@ export default function Usuarios() {
                           >
                             Você
                           </h2>
+
+
+                          <h3 className={styles.nomeUser}
+                          >
+                            {item.email_user}
+                          </h3>
 
                         </div>
                     }

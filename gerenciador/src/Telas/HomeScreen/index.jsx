@@ -115,6 +115,52 @@ export default function HomeScreen() {
                   </div>
 
                 </>)}
+
+                <div className={styles.containerNulo}>
+
+                    <div className={styles.containerBotoes}>
+                      <div className={styles.botaoAdicionar}
+                        onClick={async () => {
+                          const anula = await anulaRascunho();
+                          localStorage.setItem('id', "")
+                          if (anula) {
+                            navigate('/Adicionar/Postagem')
+                          }
+
+
+                        }}
+                      >
+                        <img src={iconeAdicionar} className={styles.imagemBotaoAdicionar} />
+                      </div>
+
+                      {
+                        permissao == 'admin' ?
+                          <>
+                            <div className={styles.botaoAdicionar}
+                              onClick={async () => {
+                                navigate('/Rascunhos')
+                              }}
+                            >
+                              <img src={pasta} className={styles.imagemBotaoAdicionar} />
+                            </div>
+
+                            <div className={styles.botaoAdicionar}
+                              onClick={async () => {
+                                navigate('/Usuarios')
+                              }}
+                            >
+                              <img src={people} className={styles.imagemBotaoAdicionar} />
+                            </div>
+                          </>
+                          :
+                          null
+                      }
+
+
+                    </div>
+
+                  </div>
+                  
               </>
               :
               <div className={styles.containerNulo}>

@@ -66,6 +66,8 @@
   justify-content: center;
   flex-direction: row;
   justify-content: space-between;
+  box-sizing: border-box;
+  padding-right: 200px;
   transition: box-shadow 0.1s;
   background-color: rgba(0, 0, 0, 0.085);
 }

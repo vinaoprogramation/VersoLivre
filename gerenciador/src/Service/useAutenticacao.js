@@ -54,6 +54,7 @@ const useAutenticacao = create((set, get) => ({
 
         if(answer && answer.dados_usuario){
           set({dados: answer.dados_usuario});
+          localStorage.setItem('dados', JSON.stringify(answer.dados_usuario))
           return true;
         }
 
@@ -130,7 +131,9 @@ const useAutenticacao = create((set, get) => ({
       const answer = await response.data;
 
       if(answer && answer.admins){
+        
         set({adminList: answer.admins});
+
         return true;      
       }
 
@@ -186,7 +189,7 @@ const useAutenticacao = create((set, get) => ({
       return false
     }
 
-  } 
+  }
 
 }))
 

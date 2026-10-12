@@ -16,6 +16,7 @@ export default function AdicionarPostagem() {
   const deletaRascunho = usePostagens((state) => state.deletaRascunho);
   const rascunho = usePostagens((state) => state.rascunho);
   const idRascunho = usePostagens((state) => state.idRascunho);
+  const enviaParaAprovacao = usePostagens((state) => state.enviaParaAprovacao);
 
 
 
@@ -189,6 +190,21 @@ export default function AdicionarPostagem() {
 
   }, []);
 
+  const envia = async(id_postagem, titulo, genero, conteudo, file) => {
+    await handleAtualizaRascunho(titulo, genero, conteudo, file)
+
+    const enviando = await enviaParaAprovacao(id_postagem)
+
+    if(!enviando){
+      alert("Erro")
+      return;
+    }
+
+    alert("Rascunho enviado para aprovação com sucesso")
+    return;
+  
+  }
+
   return <>
     <div className={styles.fundo}>
       <div className={styles.entrada}>
@@ -247,6 +263,40 @@ export default function AdicionarPostagem() {
                 onChange={handleImagem}
                 style={{ display: 'none' }}
               />
+
+
+
+              {
+                rascunho ?
+                  <>
+                    <button 
+                      className={
+                        titulo != "" && titulo.replace(/\s/g, '') != "" && conteudo != "" && conteudo.replace(/\s/g, '') != "" && genero != "" && genero.replace(/\s/g, '')?
+                        styles.botao
+                        :
+                        styles.botaoOpaco
+                      }
+
+                      onClick={() => {
+                        titulo != "" && titulo.replace(/\s/g, '') != "" && conteudo != "" && conteudo.replace(/\s/g, '') != "" && genero != "" && genero.replace(/\s/g, '')?
+                        envia(rascunho.id_postagem, titulo, genero, conteudo, file)
+                        :
+                        null
+                      }
+                        
+                      }
+                      
+
+                    
+                    
+                    >
+                      Enviar Rascunho
+                    </button>
+                  </>
+                  :
+                  null
+              }
+
             </div>
 
 
@@ -284,3 +334,4 @@ export default function AdicionarPostagem() {
 
   </>
 }
+
