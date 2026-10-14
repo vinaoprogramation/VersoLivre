@@ -259,7 +259,7 @@ async function listaRascunhos(id_autor_user) {
 
 }
 
-async function listaPostagens(offset) {
+async function listaPostagens(offset, id_user) {
 
   const contaOffSet = await postsRepository.contaOffSets();
 
@@ -267,7 +267,7 @@ async function listaPostagens(offset) {
     return { erro: "O offset chamado é maior do que o número de offsets no banco" }
   }
 
-  const postagens = await postsRepository.listaPostagens(offset);
+  const postagens = await postsRepository.listaPostagens(offset, id_user);
 
   return postagens;
 
@@ -318,6 +318,15 @@ async function enviaParaAprovacao(id_postagem, id_usuario){
 
 }
 
+async function manuseiaCurtidaPostagem(id_postagem, id_autor){
+
+  const manuseiaCurtida = await postsRepository.manuseiaCurtidaPostagem(id_postagem, id_autor);
+
+  return manuseiaCurtida;
+
+}
+
+
 module.exports = {
   enviaRascunho,
   atualizaRascunho,
@@ -332,4 +341,5 @@ module.exports = {
   listaPostagem,
   listaRascunhos,
   enviaParaAprovacao,
+  manuseiaCurtidaPostagem,
 }

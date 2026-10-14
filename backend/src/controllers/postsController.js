@@ -344,7 +344,7 @@ async function buscaRascunho(req, res) {
 
     const payload = await verificarToken(token)
 
-    const id_autor_user = payload.id_user;    
+    const id_autor_user = payload.id_user;
 
     if (!id_postagem || !id_autor_user) {
       return res.status(404).json({
@@ -403,7 +403,7 @@ async function listaRascunhosAdmin(req, res) {
       return res.status(400).json({
         mensagem: "Houve algum problema ao listar os rascunhos | " + resposta.erro
       })
-      
+
     }
 
     return res.status(200).json({
@@ -463,6 +463,16 @@ async function listaPostagens(req, res) {
 
   try {
 
+    const token = extractBearerToken(req.headers);
+
+    const id_user = await verificarToken(token).id_user;
+
+    if(!id_user){
+      return res.status(400).json({
+        mensagem: "Id não informado"
+      })
+    }
+
     const offset = req.params.offset;
 
     let numeroOffset;
@@ -477,7 +487,7 @@ async function listaPostagens(req, res) {
       })
     }
 
-    const resposta = await postsService.listaPostagens(numeroOffset);
+    const resposta = await postsService.listaPostagens(numeroOffset, id_user);
 
     if (resposta && resposta.erro == 'O offset chamado é maior do que o número de offsets no banco') {
       return res.status(200).json({
@@ -560,14 +570,14 @@ async function listaPostagem(req, res) {
 async function enviaParaAprovacao(req, res) {
 
   try {
-    
+
     const id_postagem = req.params.id;
 
     const token = await extractBearerToken(req.headers);
 
     const id_autor = await verificarToken(token).id_user;
 
-    if(!id_postagem || !id_autor){
+    if (!id_postagem || !id_autor) {
       return res.status(404).json({
         mensagem: "Bad request ao enviar rascunho para aprovação"
       })
@@ -595,6 +605,55 @@ async function enviaParaAprovacao(req, res) {
 
 }
 
+async function manuseiaCurtidaPostagem(req, res) {
+
+  try {
+
+    const id_postagem = req.params.id;
+
+    const token = await extractBearerToken(req.headers);
+
+    const id_autor_curtida = await verificarToken(token).id_user;
+
+    if (!id_postagem || !id_autor_curtida) {
+      return res.status(400).json({
+        mensagem: "Bad Request: falta de id's necessários"
+      })
+    }
+
+    const resposta = await postsService.manuseiaCurtidaPostagem(id_postagem, id_autor_curtida);
+
+    if (resposta && resposta.erro) {
+      return res.status(400).json({
+        mensagem: "Houve algum problema ao manusear a resposta"
+      })
+    }
+
+    if(resposta.mensagem == "alteracao"){
+      return res.status(200).json({
+        estado: resposta.estado
+      })
+    }
+
+    if(resposta.mensagem == "criacao"){
+      return res.status(201).json({
+        mensagem: "Curtida criada"
+      })
+    }
+
+    return res.status(204);
+
+
+  } catch (error) {
+    console.error("Erro interno ao manusear curtida | ", error);
+
+    return res.status(500).json({
+      mensagem: "Erro interno ao manusear curtida",
+    })
+  }
+
+}
+
 module.exports = {
   enviaPostagem,
   atualizaRascunho,
@@ -609,4 +668,5 @@ module.exports = {
   listaPostagem,
   enviaImagem,
   enviaParaAprovacao,
+  manuseiaCurtidaPostagem,
 }

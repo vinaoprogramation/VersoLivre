@@ -234,6 +234,18 @@ async function buscaDadosUsuario(id_user){
 
 }
 
+/* async function alteraDadosUsuario(id_user){
+
+    try {
+
+        const alteraDadosUsuario = "UPDATE users SET "
+        
+    } catch (error) {
+        console.error("Erro no banco de dados ao alterar dados do usuário", error)
+        return false;
+    }
+
+} */
 
 module.exports = {
     existeUsuario,

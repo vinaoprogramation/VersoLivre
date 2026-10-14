@@ -8,13 +8,13 @@ async function enviarRascunho(titulo_postagem, genero_postagem, classificacao_in
 
     const [enviaRascunho] = await pool.execute(enviaRascunhoQuery, [titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_autor_user]);
 
-    if(enviaRascunho.affectedRows === 0){
+    if (enviaRascunho.affectedRows === 0) {
       return enviaRascunho.affectedRows;
     }
 
     const id_envio = enviaRascunho.insertId;
 
-    return {affectedRows: enviaRascunho.affectedRows, id_postagem: id_envio};
+    return { affectedRows: enviaRascunho.affectedRows, id_postagem: id_envio };
 
   } catch (error) {
     console.error("Erro no banco de dados ao enviar rascunho", error);
@@ -31,8 +31,8 @@ async function atualizaRascunho(id_postagem, titulo_postagem, genero_postagem, c
 
     const enviaPostagemQuery = "UPDATE postagens SET titulo_postagem = ?, genero_postagem = ?, classificacao_indicativa_postagem = ?, conteudo_postagem = ? WHERE id_postagem = ?";
 
-    const  enviaPostagem = await pool.execute(enviaPostagemQuery, [titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_postagem]);
-  
+    const enviaPostagem = await pool.execute(enviaPostagemQuery, [titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_postagem]);
+
     return enviaPostagem.affectedRows;
 
   } catch (error) {
@@ -50,8 +50,8 @@ async function enviaPostagem(titulo_postagem, genero_postagem, classificacao_ind
 
     const enviaPostagemQuery = "UPDATE postagens SET titulo_postagem = ?, genero_postagem = ?, classificacao_indicativa_postagem = ?, conteudo_postagem = ? WHERE id_postagem = ?";
 
-    const  enviaPostagem = await pool.execute(enviaPostagemQuery, [titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_postagem]);
-  
+    const enviaPostagem = await pool.execute(enviaPostagemQuery, [titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, id_postagem]);
+
     return enviaPostagem.affectedRows;
 
   } catch (error) {
@@ -84,15 +84,15 @@ async function decideStatusPostagem(status_postagem, id_responsavel_postagem, id
 
     let query;
 
-    if(status_postagem == "aprovada"){
+    if (status_postagem == "aprovada") {
 
       query = "UPDATE postagens SET status_postagem = ?, id_responsavel_postagem = ?, mensagem = ? WHERE id_postagem = ?";
 
-    } else if(status_postagem == "recusada"){
+    } else if (status_postagem == "recusada") {
 
       query = "UPDATE postagens SET status_postagem = ?, id_responsavel_postagem = ?, mensagem = ?, status_escrita = 'pendente' WHERE id_postagem = ?";
 
-    } else{
+    } else {
 
       query = null;
 
@@ -100,8 +100,8 @@ async function decideStatusPostagem(status_postagem, id_responsavel_postagem, id
 
     const [enviaStatus] = await pool.execute(query, [status_postagem, id_responsavel_postagem, mensagem, id_postagem]);
 
-    if(enviaStatus.affectedRows == 0){
-      return {erro: "Erro no banco de dados(0 linhas afetadas)"}
+    if (enviaStatus.affectedRows == 0) {
+      return { erro: "Erro no banco de dados(0 linhas afetadas)" }
     }
 
     const enviaLogQuery = "INSERT INTO logs_administrativos (id_user, acao, data_acao) VALUES (?, ?, ?)";
@@ -157,7 +157,7 @@ async function buscaDadosPostagem(id_postagem) {
 
 async function buscaRascunho(id_postagem) {
 
-  try{
+  try {
 
     const buscaRascunhoQuery = "SELECT titulo_postagem, genero_postagem, classificacao_indicativa_postagem, conteudo_postagem, imagem_postagem from postagens WHERE id_postagem = ?";
 
@@ -165,7 +165,7 @@ async function buscaRascunho(id_postagem) {
 
     return buscaRascunho[0];
 
-  }catch(error){
+  } catch (error) {
     console.error("Erro ao buscar rascunho da postagem", error);
     return { erro: "Erro no banco de dados ao buscar rascunho da postagem" }
   }
@@ -254,13 +254,13 @@ async function deletaRascunho(id_postagem) {
 
 }
 
-async function listaPostagens(offset) {
+async function listaPostagens(offset, id_user) {
 
   try {
 
-    const listaPostagensQuery = 'SELECT * FROM postagens WHERE is_active = true AND status_postagem = "aprovada" AND status_escrita = "concluida" ORDER BY id_postagem ASC LIMIT 10 OFFSET ? ';
+    const listaPostagensQuery = 'SELECT p.id_postagem, p.titulo_postagem, p.genero_postagem, p.classificacao_indicativa_postagem, p.conteudo_postagem, COUNT(c.id_postagem) AS numero_curtidas, MAX(CASE WHEN c.id_autor_curtida = ? THEN 1 ELSE 0 END) AS curtido_pelo_usuario FROM postagens p LEFT JOIN curtidas_postagem c ON p.id_postagem = c.id_postagem AND c.is_active = true WHERE p.is_active = true AND p.status_postagem = "aprovada" AND p.status_escrita = "concluida" GROUP BY p.id_postagem ORDER BY p.id_postagem ASC LIMIT 10 OFFSET ? ';
 
-    const [listaPostagens] = await pool.execute(listaPostagensQuery, [(offset - 1) * 10])
+    const [listaPostagens] = await pool.execute(listaPostagensQuery, [id_user, (offset - 1) * 10])
 
     return listaPostagens;
 
@@ -275,7 +275,7 @@ async function listaPostagem(id_postagem) {
 
   try {
 
-    const listaPostagemQuery = 'SELECT p.*, u.nome_user AS autor_nome FROM postagens p LEFT JOIN users u ON p.id_autor_user = u.id_user WHERE p.id_postagem = ?';
+    const listaPostagemQuery = 'SELECT p.id_postagem, p.titulo_postagem, p.genero_postagem, p.classificacao_indicativa_postagem, p.conteudo_postagem, u.nome_user AS autor_nome FROM postagens p LEFT JOIN users u ON p.id_autor_user = u.id_user WHERE p.id_postagem = ? AND p.is_active = true AND p.status_escrita = "concluida" AND p.status_postagem = "aprovada"';
 
     const [listaPostagem] = await pool.execute(listaPostagemQuery, [id_postagem]);
 
@@ -350,16 +350,16 @@ async function buscaRascunho(id_postagem) {
     const [buscaRascunho] = await pool.execute(buscaRascunhoQuery, [id_postagem]);
 
     return buscaRascunho[0];
-    
+
   } catch (error) {
     console.error("Erro no banco de dados ao buscar rascunho | ", error);
-    return {erro: "Erro no banco de dados ao buscar rascunho"}
+    return { erro: "Erro no banco de dados ao buscar rascunho" }
   }
 
 }
 
-async function enviaParaAprovacao(id_postagem){
-  
+async function enviaParaAprovacao(id_postagem) {
+
   try {
 
     const enviaQuery = 'UPDATE postagens SET status_escrita = "concluida" WHERE id_postagem = ?';
@@ -367,11 +367,56 @@ async function enviaParaAprovacao(id_postagem){
     const [envia] = await pool.execute(enviaQuery, [id_postagem]);
 
     return envia.affectedRows;
-    
+
   } catch (error) {
     console.error("Erro no banco de dados ao enviar postagem para aprovação");
-    return {erro: "Erro no banco de dados ao enviar postagem para aprovação"}
+    return { erro: "Erro no banco de dados ao enviar postagem para aprovação" }
   }
+}
+
+async function manuseiaCurtidaPostagem(id_postagem, id_autor_curtida) {
+
+  try {
+
+    const alteraCurtidaQuery = "UPDATE curtidas_postagem SET is_active = NOT is_active, data_curtida = ? WHERE id_postagem = ? AND id_autor_curtida = ?";
+
+    const [alteraCurtida] = await pool.execute(alteraCurtidaQuery, [new Date(), id_postagem, id_autor_curtida]);
+
+    if (alteraCurtida.affectedRows !== 0) {
+      const buscaEstadoQuery = "SELECT is_active FROM curtidas_postagem WHERE id_postagem = ? AND id_autor_curtida = ?";
+
+      const [buscaEstado] = await pool.execute(buscaEstadoQuery, [id_postagem, id_autor_curtida])
+
+      if (buscaEstado[0].length !== 0) {
+        return {
+          mensagem: "alteracao",
+          estado: buscaEstado[0].is_active
+        }
+      }
+
+      return {erro: "Erro no banco de dados ao manusear curtida"}
+    }
+
+    const curtePostagemQuery = "INSERT INTO curtidas_postagem (id_postagem, id_autor_curtida, data_curtida) VALUES (?, ?, ?)";
+
+    const [curtePostagem] = await pool.execute(curtePostagemQuery, [id_postagem, id_autor_curtida, new Date()]);
+
+    if (curtePostagem.affectedRows !== 0) {
+      return {
+        mensagem: "criacao"
+      }
+    }
+
+    return { erro: "Falta de integridade" }
+
+  } catch (error) {
+    console.error("Erro no banco de dados ao curtir a postagem | ", error);
+    return { erro: "Erro no banco de dados ao curtir a postagem" }
+  }
+
+}
+
+async function carregaCurtidasEComentarios() {
 
 }
 
@@ -394,4 +439,5 @@ module.exports = {
   buscaRascunhosAdmin,
   contaOffSets,
   enviaParaAprovacao,
+  manuseiaCurtidaPostagem,
 }
