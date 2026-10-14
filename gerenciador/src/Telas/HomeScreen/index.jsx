@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, use } from "react"
 import { useNavigate } from 'react-router-dom';
 
 import styles from './styles.module.css'
@@ -53,8 +53,6 @@ export default function HomeScreen() {
   }, [])
 
   const [display, setDisplay] = useState(false);
-
-  const [info, setInfo] = useState(null)
 
   return <>
     <div className={styles.fundo}>
@@ -132,30 +130,46 @@ export default function HomeScreen() {
                       <button className={styles.botaoCurtida}
                         onClick={async () => {
                           const curte = await curtePostagem(item.id_postagem);
-                          if (curte) {
-                            if (item.id_postagem == 0) {
-                              setDisplay(like)
-                            } else {
-                              setDisplay(unlike)
-                            }
-                          }
 
+                          if(curte == 1){
+                            setDisplay(like)
+                          } else{
+                            setDisplay(unlike)
+                          }
                         }}
                       >
                         <img
                           src={
                             !display ?
-                              item.curtido_pelo_usuario == 0 ?
-                                unlike
-                                :
+                              item.curtido_pelo_usuario != null && item.curtido_pelo_usuario == 1?
                                 like
+                                :
+                                unlike
                               :
                               display
                           }
                           alt="Botão de Curtida" className={styles.imagemCurtida} />
                       </button>
+
+
+                      <button className={styles.botaoCurtida}
+                        onClick={async () => {[
+                          navigate(`/DetailScreen/${item.id_postagem}`)
+                        ]
+                        }}
+                      >
+                        <img
+                          src={comentarios}
+                          alt="Botão de Comentários" className={styles.imagemCurtida} />
+                      </button>
+
+                      
                     </div>
+                    
                   </div>
+
+
+                  
 
 
                 </>)}

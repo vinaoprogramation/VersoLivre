@@ -6,6 +6,8 @@ import usePostagens from "../../Service/usePostagens"
 
 import { ActivityIndicator } from "../../Reutilizaveis/ActivityIndicador";
 
+import envio from '../../assets/envio.png'
+
 export default function DetailScreen() {
 
   const { idPostagem } = useParams()
@@ -44,6 +46,36 @@ export default function DetailScreen() {
     return URL.createObjectURL(blob)
 
   }, [postagemAtual])
+
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+
+      const start = e.target.selectionStart;
+      const end = e.target.selectionEnd;
+
+      const spaces = '     ';
+
+      const novoConteudo = conteudo.substring(0, start) + spaces + conteudo.substring(end);
+
+      setConteudo(novoConteudo);
+
+      setTimeout(() => {
+        e.target.selectionStart = e.target.selectionEnd = start + 5;
+      }, 0);
+    }
+  };
+
+  const [conteudo, setConteudo] = useState(() => {
+    return localStorage.getItem('conteudo')
+  });
+
+  useEffect(() => {
+    localStorage.setItem('conteudo', conteudo)
+  }, [conteudo])
+
+  const [mostra, setMostra] = useState(false);
 
   return <>
 
@@ -89,10 +121,75 @@ export default function DetailScreen() {
                 }
 
                 <p className={styles.autor}>Por: {postagemAtual.autor_nome}</p>
-                
+
               </div>
 
-              
+              <div className={styles.comentarios}>
+                <div className={styles.containerBotoes}>
+                  <button className={styles.botaoComentario}
+                    onClick={() => {
+                      setMostra(true)
+                    }}
+                  >
+                    <p className={styles.textoBotaoComentario}>Adicionar Comentário</p>
+                  </button>
+
+                  {
+                    mostra ?
+                      <>
+
+                        <button className={styles.botaoComentarioExcluir}
+                          onClick={() => {
+                            setConteudo("")
+                            setMostra(false)
+                          }}
+                        >
+                          <p className={styles.textoBotaoComentario}>Excluir Rascunho</p>
+                        </button>
+
+                      </>
+                      :
+                      null
+                  }
+
+
+                </div>
+
+
+                {
+                  mostra ?
+                    <>
+                      <div>
+                        <textarea
+                          value={conteudo}
+                          onChange={(e) => setConteudo(e.target.value)}
+                          onKeyDown={handleKeyDown}
+                          cols={5}
+                          className={styles.textoConteudo}
+                          placeholder="Escreva o seu texto aqui"
+                        />
+
+
+                        <button className={styles.botaoEnvio}
+                          onClick={() => {
+                            setConteudo("")
+                            setMostra(false)
+                          }}
+                        >
+                          <img src={envio} alt="Enviar Comentário" className={styles.imagemEnvio} />
+                        </button>
+                      </div>
+
+                    </>
+                    :
+                    null
+                }
+
+
+
+              </div>
+
+
 
             </>
             :

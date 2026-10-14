@@ -464,15 +464,19 @@ const usePostagens = create(
 
         const response = await api.post(`${BASE_URL}/curtir/${id_postagem}`);
 
+        const answer = await response.data;
+
         if(response.status === 200 || response.status === 201){
-          return true;
+          if(answer && answer.estado != null){
+            return answer.estado;
+          }
         }
 
-        return false;
+        return null;
 
       } catch (error) {
         console.error("Erro ao deletar comentário da postagem", error);
-        return false;
+        return null;
       }
 
     },

@@ -23,9 +23,9 @@
   border-radius: 5px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  padding-top: 30px;
   align-items: center;
-  gap: 10vh;
+  gap: 4vh;
 }
 .postagemContainer{
   width: 80%;
@@ -96,4 +96,99 @@
 .autor{
   text-align: right;
   font-weight: 600;
+}
+
+
+
+.comentarios{
+  width: 85%;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.containerBotoes{
+  display: flex;
+  gap: 1%;
+}
+
+.botaoComentario{
+  width: 15%;
+  padding: 2% 2%;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.459);
+  background-color: rgb(57, 94, 57);
+  box-sizing: border-box;
+  transition: opacity 0.15s;
+  
+}
+
+.botaoComentarioExcluir{
+  width: 15%;
+  padding: 2% 2%;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.459);
+  background-color: rgb(94, 57, 57);
+  box-sizing: border-box;
+  transition: opacity 0.15s;
+  
+}
+
+.botaoComentario:hover{
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+.botaoComentario:active{
+  opacity: 0.4;
+  transition: opacity 0.05s;
+}
+
+.botaoComentarioExcluir:hover{
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+.botaoComentarioExcluir:active{
+  opacity: 0.4;
+  transition: opacity 0.05s;
+}
+
+.textoBotaoComentario{
+  color: #ffffff;
+  font-weight: 600;
+  text-align: center;
+}
+
+.textoConteudo{
+  border: 1px solid black;
+  padding: 0;
+  margin: 0;
+  width: 70%;
+  height: 10vh;
+  border-radius: 10px;
+  text-align: left;
+  align-items: flex-start;
+  font-size: 1.2em;
+  padding: 1%;
+  margin: 10px 0
+}
+
+.textoConteudo:focus{
+  outline: none;
+}
+
+
+.botaoEnvio{
+  display: flex;
+  position: absolute;
+  width: fit-content;
+  height: 5%;
+  background-color: grey;
+  margin-top: -6.5vh;
+}
+
+.imagemEnvio{
+  object-fit: cover;
 }

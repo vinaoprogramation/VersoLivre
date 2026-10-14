@@ -2,6 +2,7 @@
 
 *{
   font-family: "EB Garamond", serif;
+  font-size: 1em;
 }
 
 
@@ -66,10 +67,15 @@
   font-weight: 600;
 }
 
+.botaoTexto{
+  background-color: #ffffff00;
+}
 
 .textoCadastro{
   color: #885c32;
   font-weight: 600;
+  background-color: #ffffff00;
+  font-size: 1.4em;
 }
 
 .textoCadastro:hover{
