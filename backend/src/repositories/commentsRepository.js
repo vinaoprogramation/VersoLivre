@@ -11,7 +11,7 @@ async function enviaComentario(id_postagem, id_autor, mensagem) {
     return envia.affectedRows;
 
   } catch (error) {
-    console.error("Erro no banco de dados ao enviar comentário");
+    console.error("Erro no banco de dados ao enviar comentário |", error);
     return false;
   }
 }
@@ -26,7 +26,7 @@ async function buscaAutorComentario(id_comentario) {
     return envia[0].id_autor_comentario;
 
   } catch (error) {
-    console.error("Erro no banco de dados ao enviar comentário");
+    console.error("Erro no banco de dados ao buscar autor do comentário |", error);
     return false;
   }
 }
