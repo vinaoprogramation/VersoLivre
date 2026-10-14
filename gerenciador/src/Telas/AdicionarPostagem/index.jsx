@@ -201,6 +201,7 @@ export default function AdicionarPostagem() {
     }
 
     alert("Rascunho enviado para aprovação com sucesso")
+    navigate("/HomeScreen")
     return;
   
   }

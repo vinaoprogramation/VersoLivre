@@ -72,6 +72,7 @@ export default function VisualizacaoPostagem() {
     }
 
     alert("Decisão enviada");
+    navigate("/Rascunhos")
     return;
 
   }

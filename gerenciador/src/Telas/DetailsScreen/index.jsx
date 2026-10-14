@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import styles from './styles.module.css'
 
 import usePostagens from "../../Service/usePostagens"
+import useComments from "../../Service/useComments";
 
 import { ActivityIndicator } from "../../Reutilizaveis/ActivityIndicador";
 
@@ -14,6 +15,9 @@ export default function DetailScreen() {
 
   const carregaPostagem = usePostagens((state) => state.carregaPostagem);
   const postagem = usePostagens((state) => state.postagem);
+  const adicionaComentario = useComments((state) => state.adicionaComentario);
+  const listaComentarios = useComments((state) => state.listaComentarios);
+  const comentarios = useComments((state) => state.comentarios);
 
   const postagemAtual =
     postagem && String(postagem.id_postagem) === String(idPostagem)
@@ -21,11 +25,18 @@ export default function DetailScreen() {
       : null;
 
   useEffect(() => {
-    if (carregaPostagem && idPostagem) {
+    const carrega = async () => {
+      if (carregaPostagem && idPostagem) {
 
-      carregaPostagem(idPostagem);
+        await carregaPostagem(idPostagem);
 
+        listaComentarios(idPostagem);
+
+      }
     }
+
+    carrega()
+
   }, [carregaPostagem, idPostagem])
 
   const imageUrl = useMemo(() => {
@@ -57,9 +68,9 @@ export default function DetailScreen() {
 
       const spaces = '     ';
 
-      const novoConteudo = conteudo.substring(0, start) + spaces + conteudo.substring(end);
+      const novoConteudo = comentario.substring(0, start) + spaces + comentario.substring(end);
 
-      setConteudo(novoConteudo);
+      setComentario(novoConteudo);
 
       setTimeout(() => {
         e.target.selectionStart = e.target.selectionEnd = start + 5;
@@ -67,15 +78,37 @@ export default function DetailScreen() {
     }
   };
 
-  const [conteudo, setConteudo] = useState(() => {
-    return localStorage.getItem('conteudo')
+  const [comentario, setComentario] = useState(() => {
+    return localStorage.getItem('comentario')
   });
 
   useEffect(() => {
-    localStorage.setItem('conteudo', conteudo)
-  }, [conteudo])
+    localStorage.setItem('comentario', comentario)
+  }, [comentario])
 
   const [mostra, setMostra] = useState(false);
+
+  const handleComentario = async (id_postagem, comentario) => {
+    if (!id_postagem || !comentario || comentario == "" || comentario.length >1000) {
+      alert("Faltam parâmetros")
+      return;
+    }
+
+    const envia = await adicionaComentario(idPostagem, comentario);
+
+    if (!envia) {
+      alert("Erro interno");
+      return;
+    }
+
+    alert("Comentário enviado com sucesso!")
+    listaComentarios(idPostagem);
+  }
+
+  const [expande, setExpande] = useState({
+    id: null,
+    valor: false
+  });
 
   return <>
 
@@ -131,7 +164,7 @@ export default function DetailScreen() {
                       setMostra(true)
                     }}
                   >
-                    <p className={styles.textoBotaoComentario}>Adicionar Comentário</p>
+                    <p className={styles.textoBotaoComentario}>Escrever Comentário</p>
                   </button>
 
                   {
@@ -140,7 +173,7 @@ export default function DetailScreen() {
 
                         <button className={styles.botaoComentarioExcluir}
                           onClick={() => {
-                            setConteudo("")
+                            setComentario("")
                             setMostra(false)
                           }}
                         >
@@ -161,8 +194,8 @@ export default function DetailScreen() {
                     <>
                       <div>
                         <textarea
-                          value={conteudo}
-                          onChange={(e) => setConteudo(e.target.value)}
+                          value={comentario}
+                          onChange={(e) => setComentario(e.target.value)}
                           onKeyDown={handleKeyDown}
                           cols={5}
                           className={styles.textoConteudo}
@@ -172,7 +205,8 @@ export default function DetailScreen() {
 
                         <button className={styles.botaoEnvio}
                           onClick={() => {
-                            setConteudo("")
+                            handleComentario(postagemAtual.id_postagem, comentario)
+                            setComentario("")
                             setMostra(false)
                           }}
                         >
@@ -186,6 +220,53 @@ export default function DetailScreen() {
                 }
 
 
+
+                {
+                  comentarios ?
+                    <div className={styles.secaoComentarios}>
+
+                      <h1 className={styles.tituloSecaoComentarios}>Comentários: {comentarios.length}</h1>
+
+                      <div className={styles.listaComentarios}>
+                        
+                        {comentarios.map((item) => <>
+                          <div className={styles.itemComentario} 
+                          onClick={async() => {
+                            expande.valor?
+                              expande.id == item.id_comentario?
+                                setExpande({
+                                  id: item.id_comentario,
+                                  valor: false
+                                })
+                              :
+                              setExpande({
+                                id: item.id_comentario,
+                                valor: true
+                              })
+                              :
+                            setExpande({
+                              id: item.id_comentario,
+                              valor: true,
+                            })
+
+                          }}>
+                            <h3 className={styles.nomeComentario}>{item.nome_user}</h3>
+                            <p className={
+                              expande.valor && expande.id == item.id_comentario?
+                              styles.conteudoComentarioExpandido
+                              :
+                              styles.conteudoComentario
+                              }>{item.mensagem_comentario}</p>
+                          </div>
+                        </>)}
+                      </div>
+
+
+
+                    </div>
+                    :
+                    <p>Erro ao carregar os comentários</p>
+                }
 
               </div>
 

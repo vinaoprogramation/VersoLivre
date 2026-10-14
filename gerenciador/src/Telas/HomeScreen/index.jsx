@@ -52,7 +52,10 @@ export default function HomeScreen() {
     buscaAt()
   }, [])
 
-  const [display, setDisplay] = useState(false);
+  const [display, setDisplay] = useState({
+    show: false,
+    id: null
+  });
 
   return <>
     <div className={styles.fundo}>
@@ -111,18 +114,17 @@ export default function HomeScreen() {
                       >
                         {item.titulo_postagem}
                       </h2>
-                      <h4 className={styles.generoPostagem} >
-                        {item.genero_postagem}
-                      </h4>
-                      <h5 className={styles.classificacaoPostagem} >
-                        {item.classificacao_indicativa_postagem}
-                      </h5>
-                      <p className={styles.conteudoPostagem} >
-                        {item.conteudo_postagem}
-                      </p>
+                      <div className={styles.agrupamento}>
+                        <h4 className={styles.generoPostagem} >
+                          {item.genero_postagem}
+                        </h4>
+                        <h5 className={styles.classificacaoPostagem} >
+                          {item.classificacao_indicativa_postagem}
+                        </h5>
+                      </div>
 
                       <p className={styles.conteudoPostagem} >
-                        {item.numero_curtidas}
+                        {item.conteudo_postagem}
                       </p>
                     </div>
 
@@ -131,31 +133,46 @@ export default function HomeScreen() {
                         onClick={async () => {
                           const curte = await curtePostagem(item.id_postagem);
 
-                          if(curte == 1){
-                            setDisplay(like)
-                          } else{
-                            setDisplay(unlike)
+                          if (curte == 1) {
+                            setDisplay({
+                              show: true,
+                              id: item.id_postagem,
+                              image: like,
+                            })
+                          } else {
+                            setDisplay({
+                              show: true,
+                              id: item.id_postagem,
+                              image: unlike,
+                            })
                           }
                         }}
                       >
                         <img
                           src={
-                            !display ?
-                              item.curtido_pelo_usuario != null && item.curtido_pelo_usuario == 1?
+                            !display.show ?
+                              item.curtido_pelo_usuario != null && item.curtido_pelo_usuario == 1 ?
                                 like
                                 :
                                 unlike
                               :
-                              display
+                              display.id == item.id_postagem ?
+                                display.image
+                                :
+                                item.curtido_pelo_usuario == 1 ?
+                                  like
+                                  :
+                                  unlike
                           }
                           alt="Botão de Curtida" className={styles.imagemCurtida} />
                       </button>
 
+                      <p className={styles.numeroCurtidas}>{item.numero_curtidas}</p>
+
 
                       <button className={styles.botaoCurtida}
-                        onClick={async () => {[
-                          navigate(`/DetailScreen/${item.id_postagem}`)
-                        ]
+                        onClick={async () => {                          
+                            navigate(`/DetailScreen/${item.id_postagem}`)
                         }}
                       >
                         <img
@@ -163,13 +180,13 @@ export default function HomeScreen() {
                           alt="Botão de Comentários" className={styles.imagemCurtida} />
                       </button>
 
-                      
+
                     </div>
-                    
+
                   </div>
 
 
-                  
+
 
 
                 </>)}
