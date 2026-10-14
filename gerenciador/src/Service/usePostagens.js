@@ -15,6 +15,7 @@ const usePostagens = create(
     rascunhos: [],
     rascunho: null,
     rascunhosAdmin: [],
+    
 
 
     carregaPostagens: async (offset) => {
@@ -387,7 +388,7 @@ const usePostagens = create(
           return "Acesso negado";
         }
 
-        if(response.status !== 200){
+        if (response.status !== 200) {
           throw new error;
         }
 
@@ -399,7 +400,7 @@ const usePostagens = create(
 
         return true;
 
-        
+
 
 
       } catch (error) {
@@ -411,17 +412,17 @@ const usePostagens = create(
     },
 
     decideStatusPostagem: async (id_postagem, decisao, mensagem) => {
-    
+
       try {
 
         console.log(id_postagem, decisao, mensagem)
 
-        const response = await api.patch(`${BASE_URL}/${id_postagem}`,{
+        const response = await api.patch(`${BASE_URL}/${id_postagem}`, {
           status_postagem: decisao,
           mensagem: mensagem,
         })
 
-        if(response.status !== 200){
+        if (response.status !== 200) {
           console.error("Erro ao enviar status da postagem")
           return false;
         }
@@ -436,15 +437,15 @@ const usePostagens = create(
 
     },
 
-    enviaParaAprovacao: async(id_postagem) => {
+    enviaParaAprovacao: async (id_postagem) => {
 
       console.log(id_postagem)
 
       try {
-        
+
         const response = await api.patch(`${BASE_URL}/send/sketch/${id_postagem}`);
 
-        if(response.status !== 200){
+        if (response.status !== 200) {
           return false;
         }
 
@@ -455,7 +456,26 @@ const usePostagens = create(
         return false;
       }
 
-    }
+    },
+
+    curtePostagem: async (id_postagem) => {
+
+      try {
+
+        const response = await api.post(`${BASE_URL}/curtir/${id_postagem}`);
+
+        if(response.status === 200 || response.status === 201){
+          return true;
+        }
+
+        return false;
+
+      } catch (error) {
+        console.error("Erro ao deletar comentário da postagem", error);
+        return false;
+      }
+
+    },
 
   })))
 

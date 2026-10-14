@@ -8,6 +8,10 @@ import { ActivityIndicator } from "../../Reutilizaveis/ActivityIndicador";
 import iconeAdicionar from '../../assets/plus-square.png'
 import pasta from '../../assets/write.png'
 import people from '../../assets/people.png'
+import like from '../../assets/coracao_preenchido.png';
+import unlike from '../../assets/coracao_vazio.png';
+
+import comentarios from '../../assets/comentarios.png'
 
 import usePostagens from "../../Service/usePostagens";
 import useAutenticacao from "../../Service/useAutenticacao";
@@ -21,6 +25,7 @@ export default function HomeScreen() {
   const setIdRascunho = usePostagens((state) => state.setIdRascunho);
   const idRascunho = usePostagens((state) => state.idRascunho);
   const anulaRascunho = usePostagens((state) => state.anulaRascunho);
+  const curtePostagem = usePostagens((state) => state.curtePostagem);
   const autorizacao = useAutenticacao((state) => state.autorizacao);
 
   const navigate = useNavigate();
@@ -46,6 +51,10 @@ export default function HomeScreen() {
     }
     buscaAt()
   }, [])
+
+  const [display, setDisplay] = useState(false);
+
+  const [info, setInfo] = useState(null)
 
   return <>
     <div className={styles.fundo}>
@@ -91,76 +100,111 @@ export default function HomeScreen() {
             postagens.length > 0 ?
               <>
                 {postagens.map((item) => <>
-                  <div className={styles.postagemContainer}
-                    key={item.id_postagem}
-                    onClick={() => {
-                      setIdPostagem(item?.id_postagem)
-                      navigate(`/DetailScreen/${item.id_postagem}`)
+                  <div className={styles.container}>
+                    <div className={styles.postagemContainer}
+                      key={item.id_postagem}
+                      onClick={() => {
+                        setIdPostagem(item?.id_postagem)
+                        navigate(`/DetailScreen/${item.id_postagem}`)
 
-                    }}
-                  >
-                    <h2 className={styles.tituloPostagem}
+                      }}
                     >
-                      {item.titulo_postagem}
-                    </h2>
-                    <h4 className={styles.generoPostagem} >
-                      {item.genero_postagem}
-                    </h4>
-                    <h5 className={styles.classificacaoPostagem} >
-                      {item.classificacao_indicativa_postagem}
-                    </h5>
-                    <p className={styles.conteudoPostagem} >
-                      {item.conteudo_postagem}
-                    </p>
+                      <h2 className={styles.tituloPostagem}
+                      >
+                        {item.titulo_postagem}
+                      </h2>
+                      <h4 className={styles.generoPostagem} >
+                        {item.genero_postagem}
+                      </h4>
+                      <h5 className={styles.classificacaoPostagem} >
+                        {item.classificacao_indicativa_postagem}
+                      </h5>
+                      <p className={styles.conteudoPostagem} >
+                        {item.conteudo_postagem}
+                      </p>
+
+                      <p className={styles.conteudoPostagem} >
+                        {item.numero_curtidas}
+                      </p>
+                    </div>
+
+                    <div className={styles.menuPostagem}>
+                      <button className={styles.botaoCurtida}
+                        onClick={async () => {
+                          const curte = await curtePostagem(item.id_postagem);
+                          if (curte) {
+                            if (item.id_postagem == 0) {
+                              setDisplay(like)
+                            } else {
+                              setDisplay(unlike)
+                            }
+                          }
+
+                        }}
+                      >
+                        <img
+                          src={
+                            !display ?
+                              item.curtido_pelo_usuario == 0 ?
+                                unlike
+                                :
+                                like
+                              :
+                              display
+                          }
+                          alt="Botão de Curtida" className={styles.imagemCurtida} />
+                      </button>
+                    </div>
                   </div>
+
 
                 </>)}
 
                 <div className={styles.containerNulo}>
 
-                    <div className={styles.containerBotoes}>
-                      <div className={styles.botaoAdicionar}
-                        onClick={async () => {
-                          const anula = await anulaRascunho();
-                          localStorage.setItem('id', "")
-                          if (anula) {
-                            navigate('/Adicionar/Postagem')
-                          }
+                  <div className={styles.containerBotoes}>
+                    <div className={styles.botaoAdicionar}
+                      onClick={async () => {
+                        const anula = await anulaRascunho();
+                        localStorage.setItem('id', "")
+                        if (anula) {
+                          navigate('/Adicionar/Postagem')
+                        }
 
 
-                        }}
-                      >
-                        <img src={iconeAdicionar} className={styles.imagemBotaoAdicionar} />
-                      </div>
-
-                      {
-                        permissao == 'admin' ?
-                          <>
-                            <div className={styles.botaoAdicionar}
-                              onClick={async () => {
-                                navigate('/Rascunhos')
-                              }}
-                            >
-                              <img src={pasta} className={styles.imagemBotaoAdicionar} />
-                            </div>
-
-                            <div className={styles.botaoAdicionar}
-                              onClick={async () => {
-                                navigate('/Usuarios')
-                              }}
-                            >
-                              <img src={people} className={styles.imagemBotaoAdicionar} />
-                            </div>
-                          </>
-                          :
-                          null
-                      }
-
-
+                      }}
+                    >
+                      <img src={iconeAdicionar} className={styles.imagemBotaoAdicionar} />
                     </div>
 
+                    {
+                      permissao == 'admin' ?
+                        <>
+                          <div className={styles.botaoAdicionar}
+                            onClick={async () => {
+                              navigate('/Rascunhos')
+                            }}
+                          >
+                            <img src={pasta} className={styles.imagemBotaoAdicionar} />
+                          </div>
+
+                          <div className={styles.botaoAdicionar}
+                            onClick={async () => {
+                              navigate('/Usuarios')
+                            }}
+                          >
+                            <img src={people} className={styles.imagemBotaoAdicionar} />
+                          </div>
+                        </>
+                        :
+                        null
+                    }
+
+
                   </div>
-                  
+
+                </div>
+
               </>
               :
               <div className={styles.containerNulo}>

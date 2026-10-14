@@ -69,6 +69,10 @@ export default function DetailScreen() {
                   {postagemAtual.conteudo_postagem}
                 </p>
 
+                <p className={styles.conteudoPostagem} >
+                  {postagemAtual.numero_curtidas}
+                </p>
+
                 {
                   imageUrl && (
                     <div className={styles.containerImagem} >
